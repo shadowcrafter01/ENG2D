@@ -15,7 +15,7 @@ pacman -S mingw-w64-x86_64-cmake
 
 pacman -S mingw-w64-x86_64-freetype
 
-### And Here's an Example CMakeLists.txt for a project called "game"
+### And Here's an Example CMakeLists.txt for a project called "game":
 
     cmake_minimum_required(VERSION 3.20)
 
@@ -70,3 +70,9 @@ pacman -S mingw-w64-x86_64-freetype
         )
 
     endif()
+
+## Command-Line building:
+
+This isnt really an intended way to build this thing, but you could just grab everything in include/ and use it in a project you already have with all the dependencies working
+
+i might come up with a more official way to do so later on, but it just works so much cleaner with CMake
