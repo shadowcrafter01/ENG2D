@@ -1,7 +1,7 @@
 #ifndef ENG_ATLAS_HPP
 #define ENG_ATLAS_HPP
 
-#include "ENG_Texture.hpp"
+#include "ENG2D/ENG_Texture.hpp"
 
 class ENG_Atlas
 {

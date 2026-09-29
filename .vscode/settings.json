@@ -1,0 +1,23 @@
+{
+    "cmake.useCMakePresets": "always",
+
+    "cmake.configureOnOpen": true,
+
+    "cmake.buildDirectory": "${workspaceFolder}/build/${presetName}",
+
+    "cmake.generator": "MinGW Makefiles",
+
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+
+    "C_Cpp.default.compileCommands": "${workspaceFolder}/build/mingw-debug/compile_commands.json",
+
+    "C_Cpp.errorSquiggles": "enabled",
+
+    "C_Cpp.intelliSenseEngine": "default",
+
+    "files.associations": {
+        "*.hpp": "cpp",
+        "*.h": "cpp",
+        "*.cpp": "cpp"
+    }
+}

@@ -1,7 +1,7 @@
 #ifndef ENG_ANIMATEDTEXTURE_HPP
 #define ENG_ANIMATEDTEXTURE_HPP
 
-#include "ENG_Atlas.hpp"
+#include "ENG2D/ENG_Atlas.hpp"
 #include <vector>
 
 class ENG_AnimatedTexture

@@ -1,8 +1,8 @@
 #ifndef ENG_PEN_HPP
 #define ENG_PEN_HPP
 
-#include <ENG_Camera.hpp>
-#include <ENG_DrawTools.hpp>
+#include <ENG2D/ENG_Camera.hpp>
+#include <ENG2D/ENG_DrawTools.hpp>
 #include "Vector2.hpp"
 
 class ENG_Pen

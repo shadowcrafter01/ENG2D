@@ -4,9 +4,9 @@
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
 #include <SDL3_image/SDL_image.h>
-#include "Vector2.hpp"
+#include "ENG2D/Vector2.hpp"
 #include <vector>
-#include "ENG_Console.hpp"
+#include "ENG2D/ENG_Console.hpp"
 #include <string>
 
 class ENG_Window

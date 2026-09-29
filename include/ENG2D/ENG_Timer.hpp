@@ -1,5 +1,5 @@
-#ifndef TIMER_HPP
-#define TIMER_HPP
+#ifndef ENG_TIMER_HPP
+#define ENG_TIMER_HPP
 
 #include <atomic>
 #include <chrono>

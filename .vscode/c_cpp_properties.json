@@ -3,7 +3,10 @@
         {
             "name": "Win32",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/include/**",
+                "${workspaceFolder}/include/ENG2D/**",
+                "${workspaceFolder}/include/ENG2D"
             ],
             "defines": [
                 "_DEBUG",

@@ -2,13 +2,13 @@
 #define ENG_INPUT_CPP
 
 #include <SDL3/SDL.h>
-#include <Vector2.hpp>
+#include <ENG2D/Vector2.hpp>
 // #include <unordered_map>
 #include <unordered_set>
 #include <functional>
 #include <vector>
 
-#include "ENG_Camera.hpp"
+#include "ENG2D/ENG_Camera.hpp"
 
 class ENG_Input
 {

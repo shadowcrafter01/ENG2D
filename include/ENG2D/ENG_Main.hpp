@@ -10,24 +10,24 @@
 #include <iostream>
 #include <functional>
 
-#include "Vector2.hpp"
+#include "ENG2D/Vector2.hpp"
 
-#include "ENG_Console.hpp"
-#include "ENG_Window.hpp"
-#include "ENG_Texture.hpp"
-#include "ENG_Atlas.hpp"
-#include "ENG_Font.hpp"
-#include "ENG_Timer.hpp"
-#include "ENG_Audio.hpp"
-#include "ENG_Input.hpp"
-#include "ENG_Camera.hpp"
-#include "ENG_File.hpp"
-#include "ENG_DrawTools.hpp"
-#include "ENG_Pen.hpp"
-#include "ENG_CollisionShape.hpp"
-#include "ENG_Dingus.hpp"
-#include "ENG_Math.hpp"
-#include "ENG_Box2DHandler.hpp"
+#include "ENG2D/ENG_Console.hpp"
+#include "ENG2D/ENG_Window.hpp"
+#include "ENG2D/ENG_Texture.hpp"
+#include "ENG2D/ENG_Atlas.hpp"
+#include "ENG2D/ENG_Font.hpp"
+#include "ENG2D/ENG_Timer.hpp"
+#include "ENG2D/ENG_Audio.hpp"
+#include "ENG2D/ENG_Input.hpp"
+#include "ENG2D/ENG_Camera.hpp"
+#include "ENG2D/ENG_File.hpp"
+#include "ENG2D/ENG_DrawTools.hpp"
+#include "ENG2D/ENG_Pen.hpp"
+#include "ENG2D/ENG_CollisionShape.hpp"
+#include "ENG2D/ENG_Dingus.hpp"
+#include "ENG2D/ENG_Math.hpp"
+#include "ENG2D/ENG_Box2DHandler.hpp"
 
 class ENG
 {

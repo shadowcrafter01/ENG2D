@@ -1,12 +1,12 @@
 #ifndef ENG_TEXTURE_HPP
 #define ENG_TEXTURE_HPP
 
-#include "ENG_Window.hpp"
-#include "Vector2.hpp"
-#include "ENG_Console.hpp"
+#include "ENG2D/ENG_Window.hpp"
+#include "ENG2D/Vector2.hpp"
+#include "ENG2D/ENG_Console.hpp"
 #include <SDL3_image/SDL_image.h>
-#include "ENG_Font.hpp"
-#include "ENG_Camera.hpp"
+#include "ENG2D/ENG_Font.hpp"
+#include "ENG2D/ENG_Camera.hpp"
 
 class ENG_Texture
 {

@@ -1,0 +1,65 @@
+{
+    "version": 3,
+
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 20,
+        "patch": 0
+    },
+
+    "configurePresets": [
+        {
+            "name": "mingw-debug",
+            "displayName": "MSYS2 MinGW64 Debug",
+            "description": "Debug build using the MSYS2 MinGW64 toolchain",
+
+            "generator": "MinGW Makefiles",
+
+            "binaryDir": "${sourceDir}/build/mingw-debug",
+
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+
+                "CMAKE_C_COMPILER": "C:/msys64/mingw64/bin/gcc.exe",
+                "CMAKE_CXX_COMPILER": "C:/msys64/mingw64/bin/g++.exe",
+
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+
+                "ENG2D_BUILD_TESTS": "ON"
+            }
+        },
+
+        {
+            "name": "mingw-release",
+            "displayName": "MSYS2 MinGW64 Release",
+            "description": "Release build using the MSYS2 MinGW64 toolchain",
+
+            "generator": "MinGW Makefiles",
+
+            "binaryDir": "${sourceDir}/build/mingw-release",
+
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+
+                "CMAKE_C_COMPILER": "C:/msys64/mingw64/bin/gcc.exe",
+                "CMAKE_CXX_COMPILER": "C:/msys64/mingw64/bin/g++.exe",
+
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+
+                "ENG2D_BUILD_TESTS": "ON"
+            }
+        }
+    ],
+
+    "buildPresets": [
+        {
+            "name": "mingw-debug",
+            "configurePreset": "mingw-debug"
+        },
+
+        {
+            "name": "mingw-release",
+            "configurePreset": "mingw-release"
+        }
+    ]
+}

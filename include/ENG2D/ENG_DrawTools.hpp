@@ -4,14 +4,14 @@
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
 
-#include "ENG_Camera.hpp"
-#include "ENG_Texture.hpp"
-#include "ENG_Atlas.hpp"
-#include "ENG_AnimatedTexture.hpp"
-#include "ENG_Font.hpp"
+#include "ENG2D/ENG_Camera.hpp"
+#include "ENG2D/ENG_Texture.hpp"
+#include "ENG2D/ENG_Atlas.hpp"
+#include "ENG2D/ENG_AnimatedTexture.hpp"
+#include "ENG2D/ENG_Font.hpp"
 
-#include "Vector2.hpp"
-#include "colorRGBA.hpp"
+#include "ENG2D/Vector2.hpp"
+#include "ENG2D/colorRGBA.hpp"
 
 class ENG_DrawTools
 {

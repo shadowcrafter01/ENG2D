@@ -4,8 +4,8 @@
 #include <SDL3_ttf/SDL_ttf.h>
 #include <string>
 
-#include "ENG_Console.hpp"
-#include "ENG_Texture.hpp"
+#include "ENG2D/ENG_Console.hpp"
+#include "ENG2D/ENG_Texture.hpp"
 
 class ENG_Font
 {

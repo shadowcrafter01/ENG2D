@@ -1,17 +1,17 @@
 #ifndef ENG_DINGUS_HPP
 #define ENG_DINGUS_HPP
 
-#include "ENG_Window.hpp"
-#include "ENG_Texture.hpp"
-#include "ENG_Camera.hpp"
-#include "ENG_DrawTools.hpp"
-#include "ENG_Timer.hpp"
-#include "Vector2.hpp"
+#include "ENG2D/ENG_Window.hpp"
+#include "ENG2D/ENG_Texture.hpp"
+#include "ENG2D/ENG_Camera.hpp"
+#include "ENG2D/ENG_DrawTools.hpp"
+#include "ENG2D/ENG_Timer.hpp"
+#include "ENG2D/Vector2.hpp"
 #include <vector>
-#include "ENG_CollisionShape.hpp"
+#include "ENG2D/ENG_CollisionShape.hpp"
 #include <functional>
-#include "Stopwatch.hpp"
-#include "RunOnce.hpp"
+#include "ENG2D/Stopwatch.hpp"
+#include "ENG2D/RunOnce.hpp"
 
 class ENG_Dingus
 {
@@ -140,19 +140,18 @@ public:
             position.y = SDL_clamp(position.y, camera->window->size.y / -2, camera->window->size.y / 2);
         }
 
-        if (camera != nullptr && collisionShape != nullptr && collisionShape->IfOverlapping(ENG_Input::GetMouseWorldPos(camera) - position))
-        {
-            // hover event
-            _mouseHoverRunner.OnTrue(collisionShape->IfOverlapping(ENG_Input::GetMouseWorldPos(camera) - position));
-            // click
-            _mouseDownRunner_R.OnTrue(ENG_Input::Right);
-            _mouseDownRunner_L.OnTrue(ENG_Input::Left);
-            _mouseDownRunner_M.OnTrue(ENG_Input::Middle);
-
-            _mouseUpRunner_R.OnFalse(ENG_Input::Right);
-            _mouseUpRunner_L.OnFalse(ENG_Input::Left);
-            _mouseUpRunner_M.OnFalse(ENG_Input::Middle);
-        }
+        //if (camera != nullptr && collisionShape != nullptr && collisionShape->IfOverlapping(ENG_Input::GetMouseWorldPos(camera) - position))
+        //{
+        //    // hover event
+        //    _mouseHoverRunner.OnTrue(collisionShape->IfOverlapping(ENG_Input::GetMouseWorldPos(camera) - position));
+        //    // click
+        //    _mouseDownRunner_R.OnTrue(ENG_Input::Right);
+        //    _mouseDownRunner_L.OnTrue(ENG_Input::Left);
+        //    _mouseDownRunner_M.OnTrue(ENG_Input::Middle);
+        //    _mouseUpRunner_R.OnFalse(ENG_Input::Right);
+        //    _mouseUpRunner_L.OnFalse(ENG_Input::Left);
+        //    _mouseUpRunner_M.OnFalse(ENG_Input::Middle);
+        //}
     }
 
     double GetDistanceToMouse()

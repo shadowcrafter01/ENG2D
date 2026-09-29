@@ -1,8 +1,8 @@
 #ifndef ENG_CAMERA_HPP
 #define ENG_CAMERA_HPP
 
-#include "ENG_Window.hpp"
-#include "ENG_Timer.hpp"
+#include "ENG2D/ENG_Window.hpp"
+#include "ENG2D/ENG_Timer.hpp"
 
 class ENG_Camera
 {

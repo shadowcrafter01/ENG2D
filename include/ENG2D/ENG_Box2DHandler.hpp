@@ -4,8 +4,8 @@
 #include <box2d/base.h>
 #include <box2d/box2d.h>
 
-#include "Vector2.hpp"
-#include "ENG_CollisionShape.hpp"
+#include "ENG2D/Vector2.hpp"
+#include "ENG2D/ENG_CollisionShape.hpp"
 
 class ENG_Box2DHandler
 {
@@ -14,7 +14,7 @@ private:
 public:
     ENG_Box2DHandler(/* args */);
 
-    inline static b2BodyId CreateBox(b2WorldId world, Vector2<double> position, double w, double h, bool fixed, double density = 1, double friction = 0.1)
+    inline static b2BodyId CreateBox(b2WorldId world, Vector2<float> position, float w, float h, bool fixed, float density = 1.0f, float friction = 0.1f)
     {
         b2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = (fixed) ? b2_staticBody : b2_dynamicBody;
@@ -33,7 +33,7 @@ public:
         return bodyId;
 
     }
-    inline static b2BodyId CreateCircle(b2WorldId world, Vector2<double> position, double r, bool fixed, double density = 1, double friction = 0.1)
+    inline static b2BodyId CreateCircle(b2WorldId world, Vector2<float> position, float r, bool fixed, float density = 1.0f, float friction = 0.1f)
     {
         b2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = (fixed) ? b2_staticBody : b2_dynamicBody;
