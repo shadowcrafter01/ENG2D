@@ -96,12 +96,25 @@ set(BOX2D_BUILD_TESTBED OFF CACHE BOOL "" FORCE)
 set(BOX2D_BUILD_UNIT_TESTS OFF CACHE BOOL "" FORCE)
 set(BOX2D_BUILD_BENCHMARKS OFF CACHE BOOL "" FORCE)
 
+# ------------------------------------------------------------
+# nlohmann json
+# ------------------------------------------------------------
+
+FetchContent_Declare(
+    json
+    GIT_REPOSITORY https://github.com/nlohmann/json.git
+    GIT_TAG "v3.12.0"
+    GIT_SHALLOW TRUE
+)
+
+
 FetchContent_MakeAvailable(
     SDL3
     SDL3_image
     SDL3_ttf
     SDL3_mixer
     box2d
+    json
 )
 
 add_library(ENG2D INTERFACE)
@@ -128,6 +141,7 @@ target_link_libraries(
         SDL3_ttf::SDL3_ttf
         SDL3_mixer::SDL3_mixer
         box2d
+        nlohmann_json::nlohmann_json
 )
 
 if(ENG2D_BUILD_TESTS)

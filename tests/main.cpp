@@ -9,11 +9,22 @@ int main()
 
     ENG_Texture test = ENG::CreateTexture(&window, "billGates.bmp");
 
+    ENG_File file = ENG::CreateFile("test.json");
+
+    double value;
+    file.readProperty("value", &value, 10.0);
+
+    ENG::console.LogDebug(value);
+
     while (ENG::Update())
     {
         SDL_Delay(1);
         ENG::draw.DrawTexture(&camera, &test, ENG::input.GetMouseWorldPos(&camera));
+
+        
+
     }
+    file.writeProperty("value", ENG::timer.FPS);
     ENG::Shutdown();
     return 0;
 }

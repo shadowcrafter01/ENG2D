@@ -130,10 +130,10 @@ public:
     {
         return ENG_Audio(path);
     }
-    //inline static ENG_File CreateFile(const char *path)
-    //{
-    //    return ENG_File(path);
-    //}
+    inline static ENG_File CreateFile(const char *path)
+    {
+        return ENG_File(path);
+    }
     inline static ENG_Dingus CreateDingus(ENG_Camera *camera, ENG_Texture *texture)
     {
         ENG_Dingus dingus = ENG_Dingus(camera,texture);
