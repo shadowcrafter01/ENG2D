@@ -5,6 +5,9 @@ includes SDL3's satellite libraries (image, ttf, mixer, etc...) and nlohmann's j
 
 ## CMake Build Process
 
+"generator": "MinGW Makefiles",
+
+
 ### you'll need the following libs installed:
 
 pacman -S mingw-w64-x86_64-gcc
