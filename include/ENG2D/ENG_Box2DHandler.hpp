@@ -14,7 +14,7 @@ private:
 public:
     ENG_Box2DHandler(/* args */);
 
-    inline static b2BodyId CreateBox(b2WorldId world, Vector2<float> position, float w, float h, bool fixed, float density = 1.0f, float friction = 0.1f)
+    inline static b2BodyId CreateBox(b2WorldId world, Vector2<double> position, float w, float h, bool fixed, float density = 1.0f, float friction = 0.1f)
     {
         b2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = (fixed) ? b2_staticBody : b2_dynamicBody;

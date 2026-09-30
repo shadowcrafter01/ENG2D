@@ -19,10 +19,8 @@ int main()
     while (ENG::Update())
     {
         SDL_Delay(1);
-        ENG::draw.DrawTexture(&camera, &test, ENG::input.GetMouseWorldPos(&camera));
-
         
-
+        ENG::draw.DrawTexture(&camera, &test, ENG::input.GetMouseWorldPos(&camera));
     }
     file.writeProperty("value", ENG::timer.FPS);
     ENG::Shutdown();
