@@ -1,5 +1,5 @@
-#ifndef STOPWATCH_HPP
-#define STOPWATCH_HPP
+#ifndef ENG_STOPWATCH_HPP
+#define ENG_STOPWATCH_HPP
 
 #include <iostream>
 #include <thread>
@@ -8,16 +8,21 @@
 #include <chrono>
 #include <atomic>
 
-class StopwatchAsync
+namespace ENG
 {
+
+    class StopwatchAsync
+    {
     private:
         std::function<void()> function;
         std::thread thread;
-        bool active=true;
+        bool active = true;
+
     public:
-        StopwatchAsync(std::function<void()> f, int interval_ms=0)
+        StopwatchAsync(std::function<void()> f, int interval_ms = 0)
         {
-            function=([f, interval_ms, this]() {
+            function = ([f, interval_ms, this]()
+                        {
                 double timeLast=std::chrono::duration_cast< std::chrono::milliseconds >(std::chrono::system_clock::now().time_since_epoch()).count();
                 while (active) 
                 {
@@ -31,20 +36,19 @@ class StopwatchAsync
 
                     }
                         //std::this_thread::sleep_until(start + std::chrono::milliseconds(interval_ms));
-                }
-            });
-            thread=std::thread(function);
+                } });
+            thread = std::thread(function);
         }
         ~StopwatchAsync()
         {
-            active=false;
+            active = false;
             thread.join();
         }
         /*
         StopwatchAsync(std::function<void()> f)
         {
             function=([f,this]() {
-                while (true) 
+                while (true)
                 {
                     f();
                 }
@@ -53,35 +57,35 @@ class StopwatchAsync
         }
         */
         double tps;
-};
+    };
 
-class Stopwatch
-{
-private:
-    std::function<void()> function;
-    
-    double timeLast=std::chrono::duration_cast< std::chrono::milliseconds >(std::chrono::system_clock::now().time_since_epoch()).count();
-    double timeCurrent;
-public:
-    Stopwatch(std::function<void()> f, int interval_ms):
-    function{f},
-    interval{interval_ms}
+    class Stopwatch
     {
-        update();
-    }
-    void update()
-    {
-        timeCurrent=std::chrono::duration_cast< std::chrono::milliseconds >(std::chrono::system_clock::now().time_since_epoch()).count();
-        if (timeCurrent-timeLast>=interval)
+    private:
+        std::function<void()> function;
+
+        double timeLast = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+        double timeCurrent;
+
+    public:
+        Stopwatch(std::function<void()> f, int interval_ms) : function{f},
+                                                              interval{interval_ms}
         {
-            function();
-            timeLast=timeCurrent;
+            update();
         }
-    }
+        void update()
+        {
+            timeCurrent = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+            if (timeCurrent - timeLast >= interval)
+            {
+                function();
+                timeLast = timeCurrent;
+            }
+        }
 
-    int interval;
+        int interval;
+    };
+
 };
-
-
 
 #endif

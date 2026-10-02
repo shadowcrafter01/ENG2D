@@ -6,7 +6,8 @@
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/include/**",
                 "${workspaceFolder}/include/ENG2D/**",
-                "${workspaceFolder}/include/ENG2D"
+                "${workspaceFolder}/include/ENG2D",
+                "${workspaceFolder}/include"
             ],
             "defines": [
                 "_DEBUG",

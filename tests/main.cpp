@@ -1,15 +1,20 @@
-#include <ENG2D/ENG_Main.hpp>
+#include <ENG2D/Main.hpp>
 
 int main()
 {
     ENG::Init();
-    ENG_Window window = ENG::CreateWindow("le wrapler rawr", Vector2(640, 480), SDL_WINDOW_RESIZABLE);
+    
+    ENG::Window window = ENG::CreateWindow("le wrapler rawr", ENG::Vector2(640, 480), SDL_WINDOW_RESIZABLE);
 
-    ENG_Camera camera = ENG::CreateCamera(&window);
+    ENG::Camera camera = ENG::CreateCamera(&window);
 
-    ENG_Texture test = ENG::CreateTexture(&window, "billGates.bmp");
+    ENG::Texture test = ENG::CreateTexture(&window, "billGates.bmp");
 
-    ENG_File file = ENG::CreateFile("test.json");
+    ENG::File file = ENG::CreateFile("test.json");
+
+    ENG::Dingus ground = ENG::CreateDingus(&camera, &test);
+    ENG::Dingus box = ENG::CreateDingus(&camera, &test);
+    ENG::Dingus ball = ENG::CreateDingus(&camera, &test);
 
     double value;
     file.readProperty("value", &value, 10.0);
@@ -19,8 +24,8 @@ int main()
     while (ENG::Update())
     {
         SDL_Delay(1);
-        
-        ENG::draw.DrawTexture(&camera, &test, ENG::input.GetMouseWorldPos(&camera));
+
+        // ENG::draw.DrawTexture(&camera, &test, ENG::input.GetMouseWorldPos(&camera));
     }
     file.writeProperty("value", ENG::timer.FPS);
     ENG::Shutdown();

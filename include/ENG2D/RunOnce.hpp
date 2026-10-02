@@ -1,68 +1,73 @@
-#ifndef RUNONCE_HPP
-#define RUNONCE_HPP
+#ifndef ENG_RUNONCE_HPP
+#define ENG_RUNONCE_HPP
 
 #include <vector>
 #include <functional>
 
-class RunOnce
+namespace ENG
 {
-private:
-    bool flag_onTrue = true;
-    bool flag_onFalse = false;
-    std::vector<std::function<void()>> functions;
 
-public:
-    RunOnce()
+    class RunOnce
     {
-    }
+    private:
+        bool flag_onTrue = true;
+        bool flag_onFalse = false;
+        std::vector<std::function<void()>> functions;
 
-    void AssignFunction(std::function<void()> f)
-    {
-        functions.push_back(f);
-    }
-
-    bool OnTrue(bool condition)
-    {
-        if (condition)
+    public:
+        RunOnce()
         {
-            if (flag_onTrue)
+        }
+
+        void AssignFunction(std::function<void()> f)
+        {
+            functions.push_back(f);
+        }
+
+        bool OnTrue(bool condition)
+        {
+            if (condition)
             {
-                flag_onTrue = false;
-                for (auto f : functions)
+                if (flag_onTrue)
                 {
-                    f();
+                    flag_onTrue = false;
+                    for (auto f : functions)
+                    {
+                        f();
+                    }
+                    return true;
                 }
-                return true;
+                return false;
+            }
+            else
+            {
+                flag_onTrue = true;
             }
             return false;
         }
-        else
+        bool OnFalse(bool condition)
         {
-            flag_onTrue = true;
-        }
-        return false;
-    }
-    bool OnFalse(bool condition)
-    {
-        if (!condition)
-        {
-            if (flag_onFalse)
+            if (!condition)
             {
-                flag_onFalse = false;
-                for (auto f : functions)
+                if (flag_onFalse)
                 {
-                    f();
+                    flag_onFalse = false;
+                    for (auto f : functions)
+                    {
+                        f();
+                    }
+                    return true;
                 }
-                return true;
+                return false;
+            }
+            else
+            {
+                flag_onFalse = true;
             }
             return false;
         }
-        else
-        {
-            flag_onFalse = true;
-        }
-        return false;
-    }
+    };
+
 };
 
 #endif

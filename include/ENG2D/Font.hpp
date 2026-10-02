@@ -1,0 +1,57 @@
+#ifndef ENG_FONT_HPP
+#define ENG_FONT_HPP
+
+#include <SDL3_ttf/SDL_ttf.h>
+#include <string>
+
+#include "ENG2D/Console.hpp"
+#include "ENG2D/Texture.hpp"
+
+namespace ENG
+{
+
+    class Font
+    {
+    private:
+        static inline bool flag_ttfInit = false;
+
+    public:
+        Font(std::string path, int point) : path{path},
+                                            point{point}
+        {
+            if (!flag_ttfInit)
+            {
+                Console::LogLoadStart("Initializing SDL_TTF");
+                if (!TTF_Init())
+                {
+                    Console::LogLoadEnd(false);
+                    return;
+                }
+                Console::LogLoadEnd(true);
+                flag_ttfInit = true;
+            }
+            Console::LogLoadStart("Loading TTF font [" + path + "]");
+            font = TTF_OpenFont(path.c_str(), point);
+            if (font == NULL)
+            {
+                Console::LogLoadEnd(false);
+                return;
+            }
+            Console::LogLoadEnd(true);
+            state = true;
+        }
+        TTF_Text *MakeText(std::string text, Window *window)
+        {
+            TTF_Text *textOut = TTF_CreateText(window->ttfEngine, font, text.c_str(), 0);
+            TTF_SetTextColor(textOut, 255, 255, 255, SDL_ALPHA_OPAQUE);
+            return textOut;
+        }
+        TTF_Font *font;
+        std::string path;
+        int point;
+        bool state = false;
+    };
+
+};
+
+#endif
