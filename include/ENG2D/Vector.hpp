@@ -4,7 +4,7 @@
 #include <math.h>
 #include <string>
 #include <sstream>
-// #include <box2d/box2d.h>
+#include <box2d/box2d.h>
 
 namespace ENG
 {
@@ -217,10 +217,10 @@ namespace ENG
 
             return out.data();
         }
-        // operator b2Vec2()
-        //{
-        //     return (b2Vec2){x, y};
-        // }
+        operator b2Vec2()
+        {
+            return (b2Vec2){x, y};
+        }
     };
 
 };

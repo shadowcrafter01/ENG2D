@@ -11,13 +11,15 @@ namespace ENG
     private:
         /* data */
     public:
-        Transform2(T x = 0, T y = 0, T w = 1, T h = 1) : position{Vector2<T>(x, y)},
-                                                         size{Vector2<T>(w, h)}
+        Transform2(T x = 0, T y = 0, T w = 1, T h = 1, T a = 0) : position{Vector2<T>(x, y)},
+                                                                  size{Vector2<T>(w, h)},
+                                                                  angle{a}
         {
         }
 
         Vector2<T> position;
         Vector2<T> size;
+        T angle;
     };
 };
 #endif
