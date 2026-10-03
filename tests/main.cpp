@@ -13,14 +13,10 @@ int main()
     ENG::File file = ENG::CreateFile("test.json");
 
     ENG::Dingus ground = ENG::CreateDingus(&camera, &test);
-    // ground.B2D.def.type = b2_staticBody;
-    // ground.B2D.def.position = {0, -500};
-    b2Body_SetType(ground.B2D.ID, b2_staticBody);
-    b2Body_SetTransform(ground.B2D.ID, {0, -500}, b2Body_GetRotation(ground.B2D.ID));
+    ground.SetState(false);
+    ground.SetPosition({0, -500});
 
     ENG::Dingus box = ENG::CreateDingus(&camera, &test);
-
-    // ENG::Dingus ball = ENG::CreateDingus(&camera, &test);
 
     double value;
     file.readProperty("value", &value, 10.0);
@@ -32,8 +28,6 @@ int main()
     while (ENG::Update())
     {
         SDL_Delay(1);
-
-        // ENG::draw.DrawTexture(&camera, &test, ENG::input.GetMouseWorldPos(&camera));
 
         if (ENG::input.keyState(SDL_SCANCODE_W))
         {
@@ -62,7 +56,7 @@ int main()
 
         if (ENG::input.GetMouseState(SDL_BUTTON_LEFT))
         {
-            b2Body_ApplyForceToCenter(box.B2D.ID, (ENG::input.GetMouseWorldPos(&camera) - ENG::Vector2<double>(b2Body_GetTransform(box.B2D.ID).p.x, b2Body_GetTransform(box.B2D.ID).p.y)).Scale(1000, true), true);
+            box.ApplyForce((ENG::input.GetMouseWorldPos(&camera) - ENG::Vector2<double>(b2Body_GetTransform(box.B2D.ID).p.x, b2Body_GetTransform(box.B2D.ID).p.y)).Scale(1000, true));
         }
     
     }

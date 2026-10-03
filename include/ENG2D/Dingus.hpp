@@ -30,22 +30,6 @@ namespace ENG
 
         void _Init()
         {
-            B2D.def = b2DefaultBodyDef();
-            B2D.def.type = b2_dynamicBody;
-            B2D.def.position = {0, 0};
-
-            B2D.ID = b2CreateBody(B2D_Container::worldID, &B2D.def);
-
-            if (texture != NULL)
-            {
-                B2D.polygon = b2MakeBox(texture->size.x * 0.5f, texture->size.y * 0.5f);
-            }
-            B2D.shape = b2DefaultShapeDef();
-            B2D.shape.density = 1.0f;
-            B2D.shape.material.friction = 0.3f;
-            B2D.shape.material.restitution = 0.1f;
-
-            b2CreatePolygonShape(B2D.ID, &B2D.shape, &B2D.polygon);
         }
 
         // Vector2<double> _forceSum = {0, 0};
@@ -93,8 +77,8 @@ namespace ENG
             std::vector<Dingus *> &v = _instances();
             v.erase(std::remove(v.begin(), v.end(), this), v.end());
         }
-        //Dingus(const Dingus&) = delete;
-        //Dingus& operator=(const Dingus&) = delete;
+        // Dingus(const Dingus&) = delete;
+        // Dingus& operator=(const Dingus&) = delete;
 
         Camera *camera = nullptr;
         Texture *texture = nullptr;
@@ -131,9 +115,69 @@ namespace ENG
         };
         B2D_Container B2D;
 
-        void AssignCollisionShape(CollisionShape *shape)
+        void SetPosition(Vector2<double> pos)
         {
-            collisionShape = shape;
+            b2Body_SetTransform(B2D.ID, pos, b2Body_GetRotation(B2D.ID));
+        }
+        void SetRotation(double angle)
+        {
+            b2Body_SetTransform(B2D.ID, b2Body_GetPosition(B2D.ID), b2MakeRot(angle * 180 / M_PI));
+        }
+        Vector2<double> GetPosition()
+        {
+            b2Pos pos = b2Body_GetPosition(B2D.ID);
+            return Vector2<double>(pos.x, pos.y);
+        }
+        double GetAngle(bool degrees = true)
+        {
+            if (degrees)
+            {
+                return b2Rot_GetAngle(b2Body_GetRotation(B2D.ID)) * 180 / M_PI;
+            }
+            else
+            {
+                return b2Rot_GetAngle(b2Body_GetRotation(B2D.ID));
+            }
+        }
+        void SetState(bool dynamic)
+        {
+            if (dynamic)
+            {
+                b2Body_SetType(B2D.ID, b2_dynamicBody);
+            }
+            else
+            {
+                b2Body_SetType(B2D.ID, b2_staticBody);
+            }
+        }
+
+        void ApplyForce(Vector2<double> force)
+        {
+            b2Body_ApplyForceToCenter(B2D.ID, force, true);
+        }
+        void ApplyForceAt(Vector2<double> force, Vector2<double> pos)
+        {
+            b2Body_ApplyForce(B2D.ID, force, pos, true);
+        }
+
+        void AssignPhysicsBody()
+        {
+            B2D.def = b2DefaultBodyDef();
+            B2D.def.type = b2_dynamicBody;
+            B2D.def.position = {0, 0};
+
+            B2D.ID = b2CreateBody(B2D_Container::worldID, &B2D.def);
+
+            if (texture != NULL)
+            {
+                B2D.polygon = b2MakeBox(texture->size.x * 0.5f, texture->size.y * 0.5f);
+            }
+            B2D.shape = b2DefaultShapeDef();
+            B2D.shape.density = 1.0f;
+            B2D.shape.material.friction = 0.3f;
+            B2D.shape.material.restitution = 0.1f;
+
+            b2CreatePolygonShape(B2D.ID, &B2D.shape, &B2D.polygon);
         }
         void AssignTexture(Texture *new_texture)
         {
@@ -216,7 +260,7 @@ namespace ENG
 
         inline static void UpdateAll()
         {
-            b2World_Step(B2D_Container::worldID, 1.0f/60.0f, 4);
+            b2World_Step(B2D_Container::worldID, 1.0f / 60.0f, 4);
             for (Dingus *d : _instances())
             {
                 if (d->flags.active)
