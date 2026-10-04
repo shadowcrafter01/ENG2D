@@ -19,9 +19,9 @@ namespace ENG
     class DrawTools
     {
     private:
-        inline static Vector2<double> projectToCamera(Camera *camera, Vector2<double> vector)
+        inline static Vector2<float> projectToCamera(Camera *camera, Vector2<float> vector)
         {
-            Vector2<double> out = vector;
+            Vector2<float> out = vector;
 
             out.x -= camera->position.x;
             out.y -= camera->position.y;
@@ -36,7 +36,7 @@ namespace ENG
 
             return out;
         }
-        inline static bool onscreen(Camera *camera, Vector2<double> *vector, double size)
+        inline static bool onscreen(Camera *camera, Vector2<float> *vector, float size)
         {
             if (vector->x + 2 * size < 0 || vector->y + 2 * size < 0 || vector->x - size > camera->window->size.x || vector->y - size > camera->window->size.y)
             {
@@ -46,16 +46,16 @@ namespace ENG
         }
 
     public:
-        inline static void DrawTexture(Camera *camera, Texture *texture, Vector2<double> position, double size = 1, double angle = 0, ColorRGBA color = ColorRGBA(255, 255, 255, 255))
+        inline static void DrawTexture(Camera *camera, Texture *texture, Vector2<float> position, float size = 1, float angle = 0, ColorRGBA color = ColorRGBA(255, 255, 255, 255))
         {
 
-            Vector2<double> pos = projectToCamera(camera, position);
+            Vector2<float> pos = projectToCamera(camera, position);
             SDL_FRect r;
-            r.w = size * camera->zoom * texture->size.x;
-            r.h = size * camera->zoom * texture->size.y;
+            r.w = size * camera->zoom;// * texture->size.x;
+            r.h = size * camera->zoom;// * texture->size.y;
             r.x = pos.x - (r.w / 2);
             r.y = pos.y - (r.h / 2);
-            Vector2<double> vr(r.x, r.y);
+            Vector2<float> vr(r.x, r.y);
 
             if (onscreen(camera, &vr, sqrt((r.w / 2 * r.w / 2) + (r.h / 2 * r.h / 2))))
             {
@@ -68,16 +68,16 @@ namespace ENG
                 // SDL_DestroyTexture(texture->pointer);
             }
         }
-        inline static void DrawTexture(Camera *camera, Texture *texture, Vector2<double> position, Vector2<double> size, double angle = 0, ColorRGBA color = ColorRGBA(255, 255, 255, 255))
+        inline static void DrawTexture(Camera *camera, Texture *texture, Vector2<float> position, Vector2<float> size, float angle = 0, ColorRGBA color = ColorRGBA(255, 255, 255, 255))
         {
 
-            Vector2<double> pos = projectToCamera(camera, position);
+            Vector2<float> pos = projectToCamera(camera, position);
             SDL_FRect r;
-            r.w = size.x * camera->zoom * texture->size.x;
-            r.h = size.y * camera->zoom * texture->size.y;
+            r.w = size.x * camera->zoom;// * texture->size.x;
+            r.h = size.y * camera->zoom;// * texture->size.y;
             r.x = pos.x - (r.w / 2);
             r.y = pos.y - (r.h / 2);
-            Vector2<double> vr(r.x, r.y);
+            Vector2<float> vr(r.x, r.y);
 
             if (onscreen(camera, &vr, sqrt((r.w / 2 * r.w / 2) + (r.h / 2 * r.h / 2))))
             {
@@ -90,16 +90,16 @@ namespace ENG
                 // SDL_DestroyTexture(texture->pointer);
             }
         }
-        inline static void DrawAtlas(Camera *camera, Atlas *atlas, Vector2<double> position, double size = 1, double angle = 0, ColorRGBA color = ColorRGBA(255, 255, 255, 255))
+        inline static void DrawAtlas(Camera *camera, Atlas *atlas, Vector2<float> position, float size = 1, float angle = 0, ColorRGBA color = ColorRGBA(255, 255, 255, 255))
         {
 
-            Vector2<double> pos = projectToCamera(camera, position);
+            Vector2<float> pos = projectToCamera(camera, position);
             SDL_FRect r;
             r.h = size * camera->zoom * atlas->texture.size.y;
             r.w = size * camera->zoom * atlas->texture.size.x;
             r.x = pos.x - (r.w / 2);
             r.y = pos.y - (r.h / 2);
-            Vector2<double> vr(r.x, r.y);
+            Vector2<float> vr(r.x, r.y);
 
             if (onscreen(camera, &vr, sqrt((r.w / 2 * r.w / 2) + (r.h / 2 * r.h / 2))))
             {
@@ -116,7 +116,7 @@ namespace ENG
                 textureDrawCount++;
             }
         }
-        inline static void DrawAnimatedTexture(Camera *camera, AnimatedTexture *animatedTexture, Vector2<double> position, int frame = -1, double size = 1, double angle = 0, ColorRGBA color = ColorRGBA(255, 255, 255, 255))
+        inline static void DrawAnimatedTexture(Camera *camera, AnimatedTexture *animatedTexture, Vector2<float> position, int frame = -1, float size = 1, float angle = 0, ColorRGBA color = ColorRGBA(255, 255, 255, 255))
         {
             if (frame == -1)
             {
@@ -127,13 +127,13 @@ namespace ENG
                 frame = frame % animatedTexture->frameCount;
             }
 
-            Vector2<double> pos = projectToCamera(camera, position);
+            Vector2<float> pos = projectToCamera(camera, position);
             SDL_FRect r;
             r.w = size * camera->zoom * animatedTexture->frameSize.x;
             r.h = size * camera->zoom * animatedTexture->frameSize.y;
             r.x = pos.x - (r.w / 2);
             r.y = pos.y - (r.h / 2);
-            Vector2<double> vr(r.x, r.y);
+            Vector2<float> vr(r.x, r.y);
 
             if (onscreen(camera, &vr, sqrt((r.w / 2 * r.w / 2) + (r.h / 2 * r.h / 2))))
             {
@@ -151,7 +151,7 @@ namespace ENG
             }
         }
 
-        inline static void DrawFont(Camera *camera, Font *font, std::string message, Vector2<double> position, double size = 1, double angle = 0, ColorRGBA color = ColorRGBA(255, 255, 255, 255), Vector2<double> scale = Vector2<double>(1, 1))
+        inline static void DrawFont(Camera *camera, Font *font, std::string message, Vector2<float> position, float size = 1, float angle = 0, ColorRGBA color = ColorRGBA(255, 255, 255, 255), Vector2<float> scale = Vector2<float>(1, 1))
         {
             if (message == "" || !font->state)
             {
@@ -160,13 +160,13 @@ namespace ENG
 
             SDL_Surface *textSurface = TTF_RenderText_Solid(font->font, message.c_str(), 0, color);
             SDL_Texture *texture = SDL_CreateTextureFromSurface(camera->window->renderer, textSurface);
-            Vector2<double> pos = projectToCamera(camera, position);
+            Vector2<float> pos = projectToCamera(camera, position);
             SDL_FRect r;
             r.h = size * scale.x * camera->zoom * textSurface->h;
             r.w = size * scale.y * camera->zoom * textSurface->w;
             r.x = pos.x;
             r.y = pos.y;
-            Vector2<double> vr(r.x, r.y);
+            Vector2<float> vr(r.x, r.y);
 
             if (onscreen(camera, &vr, sqrt((r.w / 2 * r.w / 2) + (r.h / 2 * r.h / 2))))
             {
@@ -180,7 +180,7 @@ namespace ENG
         }
         inline static int textureDrawCount = 0;
 
-        inline static void DrawLine(Camera *camera, Vector2<double> from, Vector2<double> to, ColorRGBA color = ColorRGBA(255, 255, 255, 255))
+        inline static void DrawLine(Camera *camera, Vector2<float> from, Vector2<float> to, ColorRGBA color = ColorRGBA(255, 255, 255, 255))
         {
             from = projectToCamera(camera, from);
             to = projectToCamera(camera, to);
@@ -188,7 +188,7 @@ namespace ENG
             SDL_RenderLine(camera->window->renderer, from.x, from.y, to.x, to.y);
         }
 
-        inline static void DrawTri(Camera *camera, Vector2<double> corner1, Vector2<double> corner2, Vector2<double> corner3, ColorRGBA color = ColorRGBA(255, 255, 255, 255))
+        inline static void DrawTri(Camera *camera, Vector2<float> corner1, Vector2<float> corner2, Vector2<float> corner3, ColorRGBA color = ColorRGBA(255, 255, 255, 255))
         {
 
             corner1 = projectToCamera(camera, corner1);

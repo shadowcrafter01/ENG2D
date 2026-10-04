@@ -2,6 +2,8 @@
 #define ENG_TRANSFORM2_HPP
 
 #include "ENG2D/Texture.hpp"
+#include <box2d/box2d.h>
+#include "ENG2D/Math.hpp"
 
 namespace ENG
 {
@@ -16,10 +18,34 @@ namespace ENG
                                                                   angle{a}
         {
         }
+        Transform2(Vector2<T> pos, Vector2<T> size, T angle = 0) : position{pos},
+                                                                        size{size},
+                                                                        angle{angle}
+        {
+        }
+        Transform2(Vector2<T> pos, T w, T h, T angle = 0) : position{pos},
+                                                                 size{Vector2<T>(w, h)},
+                                                                 angle{angle}
+        {
+        }
+        Transform2(T x, T y, Vector2<T> size, T angle = 0) : position{Vector2<T>(x, y)},
+                                                                  size{size},
+                                                                  angle{angle}
+        {
+        }
 
         Vector2<T> position;
         Vector2<T> size;
         T angle;
+
+        operator b2Rot()
+        {
+            return b2MakeRot(Math::deg2rad(angle));
+        }
+        operator b2Vec2()
+        {
+            return position;
+        }
     };
 };
 #endif

@@ -27,7 +27,7 @@
 #include "ENG2D/CollisionShape.hpp"
 #include "ENG2D/Dingus.hpp"
 #include "ENG2D/Math.hpp"
-#include "ENG2D/Box2DHandler.hpp"
+#include "ENG2D/Transform.hpp"
 
 namespace ENG
 {
@@ -135,12 +135,11 @@ namespace ENG
     {
         return File(path);
     }
-    inline static Dingus CreateDingus(Camera *camera, Texture *texture)
-    {
-        Dingus dingus = Dingus(camera, texture);
-        dingus.AssignTimer(&timer);
-        return dingus;
-    }
+    //inline static Dingus CreateDingus(Camera *camera, Texture *texture)
+    //{
+    //    Dingus dingus = Dingus(camera, texture);
+    //    return dingus;
+    //}
     //};
 
 };

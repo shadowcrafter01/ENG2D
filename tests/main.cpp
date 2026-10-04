@@ -1,4 +1,6 @@
 #include <ENG2D/Main.hpp>
+#include <memory>
+#include <stdexcept>
 
 int main()
 {
@@ -12,11 +14,24 @@ int main()
 
     ENG::File file = ENG::CreateFile("test.json");
 
-    ENG::Dingus ground = ENG::CreateDingus(&camera, &test);
-    ground.SetState(false);
-    ground.SetPosition({0, -500});
+    ENG::Dingus ground = ENG::Dingus(&camera, &test, ENG::Transform2<float>(0, -500, 5000, test.size.y));
+    ground.AssignCollisionShape(ENG::CollisionShape::Box(5000, test.size.y))->SetStatic();
+    ENG::Dingus wall1 = ENG::Dingus(&camera, &test, ENG::Transform2<float>(2500, 2000, test.size.x, 5000));
+    wall1.AssignCollisionShape(ENG::CollisionShape::Box(test.size.x, 5000))->SetStatic();
+    ENG::Dingus wall2 = ENG::Dingus(&camera, &test, ENG::Transform2<float>(-2500, 2000, test.size.x, 5000));
+    wall2.AssignCollisionShape(ENG::CollisionShape::Box(test.size.x, 5000))->SetStatic();
 
-    ENG::Dingus box = ENG::CreateDingus(&camera, &test);
+    ENG::Dingus box = ENG::Dingus(&camera, &test);
+    box.AssignCollisionShape(ENG::CollisionShape::Box(test.size.x, test.size.y));
+    box.SetPosition(0, 200);
+
+    std::vector<std::unique_ptr<ENG::Dingus>> balls;
+    for (size_t i = 0; i < 100; ++i)
+    {
+        auto ball = std::make_unique<ENG::Dingus>(&camera, &test, ENG::Transform2<float>(0, 128 * i, test.size));
+        ball->AssignCollisionShape(ENG::CollisionShape::Circle(test.size.x / 2.0));
+        balls.push_back(std::move(ball));
+    }
 
     double value;
     file.readProperty("value", &value, 10.0);
@@ -56,9 +71,8 @@ int main()
 
         if (ENG::input.GetMouseState(SDL_BUTTON_LEFT))
         {
-            box.ApplyForce((ENG::input.GetMouseWorldPos(&camera) - ENG::Vector2<double>(b2Body_GetTransform(box.B2D.ID).p.x, b2Body_GetTransform(box.B2D.ID).p.y)).Scale(1000, true));
+            box.ApplyForce((ENG::Input::GetMouseWorldPos(&camera) - box.GetTransform().position).Scale(1000, true));
         }
-    
     }
 
     file.writeProperty("value", ENG::timer.FPS);

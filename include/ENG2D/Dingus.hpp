@@ -15,6 +15,7 @@
 #include "ENG2D/Transform.hpp"
 #include <box2d/base.h>
 #include <box2d/box2d.h>
+#include "ENG2D/Math.hpp"
 
 namespace ENG
 {
@@ -28,48 +29,62 @@ namespace ENG
             return v;
         }
 
-        void _Init()
+        void _Update()
         {
+            if (_physicsActive)
+            {
+                b2WorldTransform t = b2Body_GetTransform(_bodyID);
+                _transform.position.x = t.p.x;
+                _transform.position.y = t.p.y;
+                _transform.angle = b2Rot_GetAngle(t.q) * -180.0 / M_PI;
+            }
+            if (texture != NULL && camera != nullptr)
+            {
+                DrawTools::DrawTexture(camera, texture, _transform.position, _transform.size, _transform.angle);
+            }
+            Update();
         }
 
-        // Vector2<double> _forceSum = {0, 0};
+        b2BodyId _bodyID;
+        static inline b2WorldDef _worldDef = b2DefaultWorldDef();
+        static inline b2WorldId _worldID = b2CreateWorld(&_worldDef);
+        Transform2<float> _transform = Transform2<float>(0, 0, 1, 1, 0);
+        CollisionShape collisionShape;
 
-        void _PropagatePhysics()
-        {
-            //_forceSum += velocity.Scale(-damping, true);
-            // velocity += (_forceSum / mass) * timer->delta * 0.5;
-            // transform.position += velocity * timer->delta;
-            // velocity += (_forceSum / mass) * timer->delta * 0.5;
-            //_forceSum = Vector2<double>(0, 0);
-        }
-
-        void _OnClick()
-        {
-        }
-
-        RunOnce _mouseDownRunner_R;
-        RunOnce _mouseDownRunner_L;
-        RunOnce _mouseDownRunner_M;
-        RunOnce _mouseHoverRunner;
-        RunOnce _mouseUpRunner_R;
-        RunOnce _mouseUpRunner_L;
-        RunOnce _mouseUpRunner_M;
+        bool _active = true;
+        bool _physicsActive = false;
 
     public:
-        Dingus()
+        Dingus(Camera *camera, Transform2<float> _transform) : _transform{_transform}
         {
-            _Init();
             _instances().push_back(this);
         }
-        Dingus(Camera *camera) : camera{camera}
+        Dingus(Camera *camera, Vector2<float> pos = Vector2<float>(0, 0), float angle = 0, Vector2<float> size = Vector2<float>(0, 0)) : camera{camera}
         {
-            _Init();
+            _transform.position = pos;
+            _transform.size = size;
+            _transform.angle = angle;
             _instances().push_back(this);
         }
-        Dingus(Camera *camera, Texture *texture) : camera{camera},
-                                                   texture{texture}
+        Dingus(Camera *camera, Texture *texture, Transform2<float> _transform) : camera{camera},
+                                                                                 texture{texture},
+                                                                                 _transform{_transform}
         {
-            _Init();
+            _instances().push_back(this);
+        }
+        Dingus(Camera *camera, Texture *texture, Vector2<float> pos = Vector2<float>(0, 0), float angle = 0, Vector2<float> size = Vector2<float>(0, 0)) : camera{camera},
+                                                                                                                                                           texture{texture}
+        {
+            if (size = Vector2<float>(0, 0))
+            {
+                _transform.size = texture->size;
+            }
+            else
+            {
+                _transform.size = size;
+            }
+            _transform.position = pos;
+            _transform.angle = angle;
             _instances().push_back(this);
         }
         ~Dingus()
@@ -77,200 +92,233 @@ namespace ENG
             std::vector<Dingus *> &v = _instances();
             v.erase(std::remove(v.begin(), v.end(), this), v.end());
         }
-        // Dingus(const Dingus&) = delete;
-        // Dingus& operator=(const Dingus&) = delete;
+        Dingus(const Dingus&) = delete;
+        Dingus& operator=(const Dingus&) = delete;
 
         Camera *camera = nullptr;
         Texture *texture = nullptr;
-        // Vector2<double> position = {0, 0};
-        Transform2<double> transform;
-        // Vector2<double> velocity = {0, 0};
-        // double rotation = 0;
-        // double size = 1;
-        // Vector2<double> scale = {1, 1};
-        Timer *timer = nullptr;
-        // double mass = 1;
-        // double damping = 0;
-        // int collisionLayer;
-        // int renderLayer;
-        CollisionShape *collisionShape = nullptr;
 
-        struct Flags
+        // assign functions
+        Dingus *AssignCollisionShape(CollisionShape collider, float density = 1.0f, float friction = 0.25f, float restitution = 0.1f)
         {
-            bool fenceToWindow = false;
-            bool collisionEnabled = false;
-            bool active = true;
-            bool physicsEnabled = true;
-        };
-        Flags flags;
-
-        struct B2D_Container
-        {
-            b2BodyDef def;
-            b2BodyId ID;
-            b2Polygon polygon;
-            b2ShapeDef shape;
-            static inline b2WorldDef worldDef = b2DefaultWorldDef();
-            static inline b2WorldId worldID = b2CreateWorld(&worldDef);
-        };
-        B2D_Container B2D;
-
-        void SetPosition(Vector2<double> pos)
-        {
-            b2Body_SetTransform(B2D.ID, pos, b2Body_GetRotation(B2D.ID));
-        }
-        void SetRotation(double angle)
-        {
-            b2Body_SetTransform(B2D.ID, b2Body_GetPosition(B2D.ID), b2MakeRot(angle * 180 / M_PI));
-        }
-        Vector2<double> GetPosition()
-        {
-            b2Pos pos = b2Body_GetPosition(B2D.ID);
-            return Vector2<double>(pos.x, pos.y);
-        }
-        double GetAngle(bool degrees = true)
-        {
-            if (degrees)
+            if (_physicsActive)
             {
-                return b2Rot_GetAngle(b2Body_GetRotation(B2D.ID)) * 180 / M_PI;
+                return this;
+            }
+
+            collisionShape = collider;
+
+            b2BodyDef bodyDef = b2DefaultBodyDef();
+            bodyDef.type = b2_dynamicBody;
+            bodyDef.position = _transform.position;
+            _bodyID = b2CreateBody(_worldID, &bodyDef);
+            b2ShapeDef shapeDef = b2DefaultShapeDef();
+            shapeDef.density = density;
+            shapeDef.material.friction = friction;
+            shapeDef.material.restitution = restitution;
+
+            switch (collisionShape.type)
+            {
+            case CollisionShape::Type::Box:
+            {
+                b2Polygon polygon = b2MakeBox(collisionShape.halfSize.x, collisionShape.halfSize.y);
+                b2CreatePolygonShape(_bodyID, &shapeDef, &polygon);
+                break;
+            }
+            case CollisionShape::Type::Circle:
+            {
+                b2Circle circle = {{0.0f, 0.0f}, collisionShape.radius};
+                b2CreateCircleShape(_bodyID, &shapeDef, &circle);
+                break;
+            }
+            case CollisionShape::Type::Capsule:
+            {
+                b2Capsule capsule = {collisionShape.pointA, collisionShape.pointB, collisionShape.radius};
+                b2CreateCapsuleShape(_bodyID, &shapeDef, &capsule);
+                break;
+            }
+            case CollisionShape::Type::Polygon:
+            {
+                if (collisionShape.vertices.size() < 3)
+                {
+                    b2DestroyBody(_bodyID);
+                    _bodyID = b2_nullBodyId;
+                    throw std::invalid_argument("Polygon needs at least 3 vertices");
+                }
+                b2Hull hull = b2ComputeHull(collisionShape.vertices.data(), static_cast<int>(collisionShape.vertices.size()));
+                if (hull.count < 3)
+                {
+                    b2DestroyBody(_bodyID);
+                    _bodyID = b2_nullBodyId;
+                    throw std::invalid_argument("Invalid polygon geometry");
+                }
+                b2Polygon polygon = b2MakePolygon(&hull, 0.0f);
+                b2CreatePolygonShape(_bodyID, &shapeDef, &polygon);
+                break;
+            }
+            case CollisionShape::Type::Segment:
+            {
+                b2Segment segment = {collisionShape.segmentA, collisionShape.segmentB};
+                b2CreateSegmentShape(_bodyID, &shapeDef, &segment);
+                break;
+            }
+            }
+            _physicsActive = true;
+
+            return this;
+        }
+
+        // get functions
+        Transform2<float> GetTransform()
+        {
+            return _transform;
+        }
+        b2BodyId *GetBodyID()
+        {
+            if (_physicsActive)
+            {
+                return &_bodyID;
             }
             else
             {
-                return b2Rot_GetAngle(b2Body_GetRotation(B2D.ID));
+                return nullptr;
             }
         }
-        void SetState(bool dynamic)
+        Vector2<float> GetVelocity()
         {
-            if (dynamic)
+            return Vector2<float>::B2D_to_ENG(b2Body_GetLinearVelocity(_bodyID));
+        }
+
+        // set functions
+        Dingus *SetTransform(Transform2<float> t)
+        {
+            if (_physicsActive)
             {
-                b2Body_SetType(B2D.ID, b2_dynamicBody);
+                b2Body_SetTransform(_bodyID, t, t);
+                _transform.size = t.size;
             }
             else
             {
-                b2Body_SetType(B2D.ID, b2_staticBody);
+                _transform = t;
             }
+            return this;
         }
-
-        void ApplyForce(Vector2<double> force)
+        Dingus *SetPosition(Vector2<float> p)
         {
-            b2Body_ApplyForceToCenter(B2D.ID, force, true);
-        }
-        void ApplyForceAt(Vector2<double> force, Vector2<double> pos)
-        {
-            b2Body_ApplyForce(B2D.ID, force, pos, true);
-        }
-
-        void AssignPhysicsBody()
-        {
-            B2D.def = b2DefaultBodyDef();
-            B2D.def.type = b2_dynamicBody;
-            B2D.def.position = {0, 0};
-
-            B2D.ID = b2CreateBody(B2D_Container::worldID, &B2D.def);
-
-            if (texture != NULL)
+            if (_physicsActive)
             {
-                B2D.polygon = b2MakeBox(texture->size.x * 0.5f, texture->size.y * 0.5f);
+                b2Body_SetTransform(_bodyID, p, _transform);
             }
-            B2D.shape = b2DefaultShapeDef();
-            B2D.shape.density = 1.0f;
-            B2D.shape.material.friction = 0.3f;
-            B2D.shape.material.restitution = 0.1f;
-
-            b2CreatePolygonShape(B2D.ID, &B2D.shape, &B2D.polygon);
-        }
-        void AssignTexture(Texture *new_texture)
-        {
-            texture = new_texture;
-        }
-        void AssignCamera(Camera *new_camera)
-        {
-            camera = new_camera;
-        }
-        void AssignTimer(Timer *new_timer)
-        {
-            timer = new_timer;
-        }
-        void AssignClickEvent_R(std::function<void()> f)
-        {
-            _mouseDownRunner_R.AssignFunction(f);
-        }
-        void AssignClickEvent_L(std::function<void()> f)
-        {
-            _mouseDownRunner_L.AssignFunction(f);
-        }
-        void AssignClickEvent_M(std::function<void()> f)
-        {
-            _mouseDownRunner_M.AssignFunction(f);
-        }
-        void AssignHoverEvent(std::function<void()> f)
-        {
-            _mouseHoverRunner.AssignFunction(f);
-        }
-
-        void ApplyForce(Vector2<double> force)
-        {
-            //_forceSum += force; // * timer->delta;
-        }
-
-        void Update()
-        {
-            if (flags.physicsEnabled && timer != nullptr)
+            else
             {
-                _PropagatePhysics();
+                _transform.position = p;
             }
-            b2WorldTransform t = b2Body_GetTransform(B2D.ID);
-            transform.position.x = t.p.x;
-            transform.position.y = t.p.y;
-            transform.angle = b2Rot_GetAngle(t.q) * -180.0 / M_PI;
-
-            if (texture != NULL && camera != nullptr)
-            {
-                DrawTools::DrawTexture(camera, texture, transform.position, transform.size, transform.angle);
-            }
-
-            if (flags.fenceToWindow && camera != nullptr)
-            {
-                transform.position.x = SDL_clamp(transform.position.x, camera->window->size.x / -2, camera->window->size.x / 2);
-                transform.position.y = SDL_clamp(transform.position.y, camera->window->size.y / -2, camera->window->size.y / 2);
-            }
-
-            // if (camera != nullptr && collisionShape != nullptr && collisionShape->IfOverlapping(Input::GetMouseWorldPos(camera) - position))
-            //{
-            //     // hover event
-            //     _mouseHoverRunner.OnTrue(collisionShape->IfOverlapping(Input::GetMouseWorldPos(camera) - position));
-            //     // click
-            //     _mouseDownRunner_R.OnTrue(Input::Right);
-            //     _mouseDownRunner_L.OnTrue(Input::Left);
-            //     _mouseDownRunner_M.OnTrue(Input::Middle);
-            //     _mouseUpRunner_R.OnFalse(Input::Right);
-            //     _mouseUpRunner_L.OnFalse(Input::Left);
-            //     _mouseUpRunner_M.OnFalse(Input::Middle);
-            // }
+            return this;
         }
-
-        double GetDistanceToMouse()
+        Dingus *SetPosition(float x, float y)
         {
-            if (camera == nullptr)
+            if (_physicsActive)
             {
-                return -1;
+                b2Body_SetTransform(_bodyID, (b2Vec2){x, y}, _transform);
             }
-            return Vector2<double>::Distance(transform.position, Input::GetMousePos(camera));
+            else
+            {
+                _transform.position.x = x;
+                _transform.position.y = y;
+            }
+            return this;
+        }
+        Dingus *SetAngle(float a)
+        {
+            if (_physicsActive)
+            {
+                b2Body_SetTransform(_bodyID, _transform, b2MakeRot(Math::deg2rad(a)));
+            }
+            else
+            {
+                _transform.angle = a;
+            }
+            return this;
+        }
+        Dingus *SetStatic(bool isStatic = true)
+        {
+            if (_physicsActive)
+            {
+                b2Body_SetType(_bodyID, (isStatic) ? b2_staticBody : b2_dynamicBody);
+            }
+            return this;
+        }
+        Dingus *SetVelocity(float u, float v)
+        {
+            b2Body_SetLinearVelocity(_bodyID, {u, v});
+            return this;
+        }
+        Dingus *SetVelocity(Vector2<float> v)
+        {
+            b2Body_SetLinearVelocity(_bodyID, v);
+            return this;
         }
 
+        // apply functions
+        void ApplyForce(Vector2<float> f)
+        {
+            if (_physicsActive)
+            {
+                b2Body_ApplyForceToCenter(_bodyID, f, true);
+            }
+            else
+            {
+            }
+        }
+        void ApplyForceAt(Vector2<float> f, Vector2<float> p)
+        {
+            if (_physicsActive)
+            {
+                b2Body_ApplyForce(_bodyID, f, p, true);
+            }
+            else
+            {
+            }
+        }
+        void ApplyImpulse(Vector2<float> i)
+        {
+            if (_physicsActive)
+            {
+                b2Body_ApplyLinearImpulseToCenter(_bodyID, i, true);
+            }
+            else
+            {
+            }
+        }
+        void ApplyImpulseAt(Vector2<float> i, Vector2<float> p)
+        {
+            if (_physicsActive)
+            {
+                b2Body_ApplyLinearImpulse(_bodyID, i, p, true);
+            }
+            else
+            {
+            }
+        }
+
+        // virtual update function that you override (if you want) in any class that uses Dingus as a parent class
+        virtual void Update()
+        {
+        }
+
+        // update all function called by the engine, no touchie
         inline static void UpdateAll()
         {
-            b2World_Step(B2D_Container::worldID, 1.0f / 60.0f, 4);
+            b2World_Step(_worldID, 1.0 / 60.0, 4);
             for (Dingus *d : _instances())
             {
-                if (d->flags.active)
+                if (d->_active)
                 {
-                    d->Update();
+                    d->_Update();
                 }
             }
         }
     };
-
 };
 
 #endif

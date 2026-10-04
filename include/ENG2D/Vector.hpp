@@ -74,6 +74,10 @@ namespace ENG
             T abs = vec.Magnitude();
             return Vector2(vec.x / abs, vec.y / abs);
         }
+        inline static Vector2<T> B2D_to_ENG(b2Vec2 vec)
+        {
+            return (Vector2<T>){(T)vec.x, (T)vec.y};
+        }
 
         template <class U>
         Vector2<T> operator+(const Vector2<U> &r)
@@ -195,6 +199,16 @@ namespace ENG
         operator Vector2<double>()
         {
             Vector2<double> r = Vector2<double>((double)x, (double)y);
+            return r;
+        }
+        operator Vector2<int>()
+        {
+            Vector2<int> r = Vector2<int>((int)x, (int)y);
+            return r;
+        }
+        operator Vector2<float>()
+        {
+            Vector2<float> r = Vector2<float>((float)x, (float)y);
             return r;
         }
         operator std::string()
