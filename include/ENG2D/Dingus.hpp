@@ -17,17 +17,21 @@
 #include <box2d/box2d.h>
 #include "ENG2D/Math.hpp"
 
+#include <memory>
+#include <utility>
+
 namespace ENG
 {
 
     class Dingus
     {
     private:
-        static std::vector<Dingus *> &_instances()
-        {
-            static std::vector<Dingus *> v;
-            return v;
-        }
+        // static std::vector<std::unique_ptr<Dingus *>> _instances()
+        //{
+        //     static std::vector<std::unique_ptr<Dingus *>> v;
+        //     return v;
+        // }
+        inline static std::vector<std::unique_ptr<Dingus>> _instances;
 
         void _Update()
         {
@@ -38,9 +42,9 @@ namespace ENG
                 _transform.position.y = t.p.y;
                 _transform.angle = b2Rot_GetAngle(t.q) * -180.0 / M_PI;
             }
-            if (texture != NULL && camera != nullptr)
+            if (_texture != NULL && _camera != nullptr)
             {
-                DrawTools::DrawTexture(camera, texture, _transform.position, _transform.size, _transform.angle);
+                DrawTools::DrawTexture(_camera, _texture, _transform.position, _transform.size, _transform.angle);
             }
             Update();
         }
@@ -50,30 +54,29 @@ namespace ENG
         static inline b2WorldId _worldID = b2CreateWorld(&_worldDef);
         Transform2<float> _transform = Transform2<float>(0, 0, 1, 1, 0);
         CollisionShape collisionShape;
+        Camera *_camera = nullptr;
+        Texture *_texture = nullptr;
 
         bool _active = true;
         bool _physicsActive = false;
 
-    public:
+        // constructors
         Dingus(Camera *camera, Transform2<float> _transform) : _transform{_transform}
         {
-            _instances().push_back(this);
         }
-        Dingus(Camera *camera, Vector2<float> pos = Vector2<float>(0, 0), float angle = 0, Vector2<float> size = Vector2<float>(0, 0)) : camera{camera}
+        Dingus(Camera *camera, Vector2<float> pos = Vector2<float>(0, 0), float angle = 0, Vector2<float> size = Vector2<float>(0, 0)) : _camera{camera}
         {
             _transform.position = pos;
             _transform.size = size;
             _transform.angle = angle;
-            _instances().push_back(this);
         }
-        Dingus(Camera *camera, Texture *texture, Transform2<float> _transform) : camera{camera},
-                                                                                 texture{texture},
+        Dingus(Camera *camera, Texture *texture, Transform2<float> _transform) : _camera{camera},
+                                                                                 _texture{texture},
                                                                                  _transform{_transform}
         {
-            _instances().push_back(this);
         }
-        Dingus(Camera *camera, Texture *texture, Vector2<float> pos = Vector2<float>(0, 0), float angle = 0, Vector2<float> size = Vector2<float>(0, 0)) : camera{camera},
-                                                                                                                                                           texture{texture}
+        Dingus(Camera *camera, Texture *texture, Vector2<float> pos = Vector2<float>(0, 0), float angle = 0, Vector2<float> size = Vector2<float>(0, 0)) : _camera{camera},
+                                                                                                                                                           _texture{texture}
         {
             if (size = Vector2<float>(0, 0))
             {
@@ -85,22 +88,82 @@ namespace ENG
             }
             _transform.position = pos;
             _transform.angle = angle;
-            _instances().push_back(this);
+        }
+
+    public:
+        static Dingus *Create(Camera *camera, Transform2<float> transform)
+        {
+            auto dngs = std::unique_ptr<Dingus>(new Dingus(camera, transform));
+            Dingus *ptr = dngs.get();
+            _instances.push_back(std::move(dngs));
+            return ptr;
+        }
+        static Dingus *Create(Camera *camera, Vector2<float> pos = Vector2<float>(0, 0), float angle = 0, Vector2<float> size = Vector2<float>(0, 0))
+        {
+            auto dngs = std::unique_ptr<Dingus>(new Dingus(camera, pos, angle, size));
+            Dingus *ptr = dngs.get();
+            _instances.push_back(std::move(dngs));
+            return ptr;
+        }
+        static Dingus *Create(Camera *camera, Texture *texture, Transform2<float> transform)
+        {
+            auto dngs = std::unique_ptr<Dingus>(new Dingus(camera, texture, transform));
+            Dingus *ptr = dngs.get();
+            _instances.push_back(std::move(dngs));
+            return ptr;
+        }
+        static Dingus *Create(Camera *camera, Texture *texture, Vector2<float> pos = Vector2<float>(0, 0), float angle = 0, Vector2<float> size = Vector2<float>(0, 0))
+        {
+            auto dngs = std::unique_ptr<Dingus>(new Dingus(camera, texture, pos, angle, size));
+            Dingus *ptr = dngs.get();
+            _instances.push_back(std::move(dngs));
+            return ptr;
         }
         ~Dingus()
         {
-            std::vector<Dingus *> &v = _instances();
-            v.erase(std::remove(v.begin(), v.end(), this), v.end());
+            if (_physicsActive)
+            {
+                b2DestroyBody(_bodyID);
+                _bodyID = b2_nullBodyId;
+            }
         }
-        Dingus(const Dingus&) = delete;
-        Dingus& operator=(const Dingus&) = delete;
-
-        Camera *camera = nullptr;
-        Texture *texture = nullptr;
+        Dingus(const Dingus &) = delete;
+        Dingus &operator=(const Dingus &) = delete;
+        static void Destroy(Dingus *dngs)
+        {
+            for (auto i = _instances.begin(); i != _instances.end(); ++i)
+            {
+                if (i->get() == dngs)
+                {
+                    _instances.erase(i);
+                    return;
+                }
+            }
+        }
+        void Destroy()
+        {
+            for (auto i = _instances.begin(); i != _instances.end(); ++i)
+            {
+                if (i->get() == this)
+                {
+                    i->get()->_physicsActive = false;
+                    _instances.erase(i);
+                    return;
+                }
+            }
+        }
+        static void DestroyAll()
+        {
+            _instances.clear();
+        }
 
         // assign functions
         Dingus *AssignCollisionShape(CollisionShape collider, float density = 1.0f, float friction = 0.25f, float restitution = 0.1f)
         {
+            if (this == nullptr)
+            {
+                return nullptr;
+            }
             if (_physicsActive)
             {
                 return this;
@@ -167,14 +230,48 @@ namespace ENG
 
             return this;
         }
+        Dingus *AssignTexture(Texture *tex)
+        {
+            if (this == nullptr)
+            {
+                return nullptr;
+            }
+            _texture = tex;
+            return this;
+        }
+        Dingus *AssignCamera(Camera *cam)
+        {
+            if (this == nullptr)
+            {
+                return nullptr;
+            }
+            _camera = cam;
+            return this;
+        }
 
         // get functions
         Transform2<float> GetTransform()
         {
+            if (this == nullptr)
+            {
+                return Transform2<float>();
+            }
             return _transform;
+        }
+        Vector2<float> GetPosition()
+        {
+            if (this == nullptr)
+            {
+                return Vector2<float>();
+            }
+            return _transform.position;
         }
         b2BodyId *GetBodyID()
         {
+            if (this == nullptr)
+            {
+                return nullptr;
+            }
             if (_physicsActive)
             {
                 return &_bodyID;
@@ -186,16 +283,65 @@ namespace ENG
         }
         Vector2<float> GetVelocity()
         {
+            if (this == nullptr)
+            {
+                return Vector2<float>();
+            }
             return Vector2<float>::B2D_to_ENG(b2Body_GetLinearVelocity(_bodyID));
+        }
+        Texture *GetTexture()
+        {
+            if (this == nullptr)
+            {
+                return nullptr;
+            }
+            return _texture;
+        }
+        Camera *GetCamera()
+        {
+            if (this == nullptr)
+            {
+                return nullptr;
+            }
+            return _camera;
+        }
+        static Dingus *GetNearest(Vector2<float> position)
+        {
+            Dingus *nearestDingus = nullptr;
+            float nearestDistance = std::numeric_limits<float>::max();
+
+            for (const auto &dngs : _instances)
+            {
+                float dist = Vector2<float>::Distance(position, dngs->GetPosition());
+                if (dist < nearestDistance)
+                {
+                    nearestDistance = dist;
+                    nearestDingus = dngs.get();
+                }
+            }
+            return nearestDingus;
+        }
+        static const std::vector<std::unique_ptr<Dingus>> &GetAllInstances()
+        {
+            return _instances;
+        }
+        static b2WorldId GetWorld()
+        {
+            return _worldID;
         }
 
         // set functions
         Dingus *SetTransform(Transform2<float> t)
         {
+            if (this == nullptr)
+            {
+                return nullptr;
+            }
             if (_physicsActive)
             {
                 b2Body_SetTransform(_bodyID, t, t);
                 _transform.size = t.size;
+                b2Body_SetAwake(_bodyID, true);
             }
             else
             {
@@ -205,9 +351,14 @@ namespace ENG
         }
         Dingus *SetPosition(Vector2<float> p)
         {
+            if (this == nullptr)
+            {
+                return nullptr;
+            }
             if (_physicsActive)
             {
                 b2Body_SetTransform(_bodyID, p, _transform);
+                b2Body_SetAwake(_bodyID, true);
             }
             else
             {
@@ -217,6 +368,10 @@ namespace ENG
         }
         Dingus *SetPosition(float x, float y)
         {
+            if (this == nullptr)
+            {
+                return nullptr;
+            }
             if (_physicsActive)
             {
                 b2Body_SetTransform(_bodyID, (b2Vec2){x, y}, _transform);
@@ -228,20 +383,28 @@ namespace ENG
             }
             return this;
         }
-        Dingus *SetAngle(float a)
+        Dingus *SetAngle(float deg)
         {
+            if (this == nullptr)
+            {
+                return nullptr;
+            }
             if (_physicsActive)
             {
-                b2Body_SetTransform(_bodyID, _transform, b2MakeRot(Math::deg2rad(a)));
+                b2Body_SetTransform(_bodyID, _transform, b2MakeRot(Math::deg2rad(deg)));
             }
             else
             {
-                _transform.angle = a;
+                _transform.angle = deg;
             }
             return this;
         }
         Dingus *SetStatic(bool isStatic = true)
         {
+            if (this == nullptr)
+            {
+                return nullptr;
+            }
             if (_physicsActive)
             {
                 b2Body_SetType(_bodyID, (isStatic) ? b2_staticBody : b2_dynamicBody);
@@ -250,18 +413,35 @@ namespace ENG
         }
         Dingus *SetVelocity(float u, float v)
         {
+            if (this == nullptr)
+            {
+                return nullptr;
+            }
             b2Body_SetLinearVelocity(_bodyID, {u, v});
             return this;
         }
         Dingus *SetVelocity(Vector2<float> v)
         {
+            if (this == nullptr)
+            {
+                return nullptr;
+            }
             b2Body_SetLinearVelocity(_bodyID, v);
             return this;
         }
+        static void SetWorldGravity(Vector2<float> v)
+        {
+            b2World_SetGravity(_worldID, v);
+        }
+
 
         // apply functions
-        void ApplyForce(Vector2<float> f)
+        Dingus *ApplyForce(Vector2<float> f)
         {
+            if (this == nullptr)
+            {
+                return nullptr;
+            }
             if (_physicsActive)
             {
                 b2Body_ApplyForceToCenter(_bodyID, f, true);
@@ -269,9 +449,14 @@ namespace ENG
             else
             {
             }
+            return this;
         }
-        void ApplyForceAt(Vector2<float> f, Vector2<float> p)
+        Dingus *ApplyForceAt(Vector2<float> f, Vector2<float> p)
         {
+            if (this == nullptr)
+            {
+                return nullptr;
+            }
             if (_physicsActive)
             {
                 b2Body_ApplyForce(_bodyID, f, p, true);
@@ -279,9 +464,14 @@ namespace ENG
             else
             {
             }
+            return this;
         }
-        void ApplyImpulse(Vector2<float> i)
+        Dingus *ApplyImpulse(Vector2<float> i)
         {
+            if (this == nullptr)
+            {
+                return nullptr;
+            }
             if (_physicsActive)
             {
                 b2Body_ApplyLinearImpulseToCenter(_bodyID, i, true);
@@ -289,9 +479,14 @@ namespace ENG
             else
             {
             }
+            return this;
         }
-        void ApplyImpulseAt(Vector2<float> i, Vector2<float> p)
+        Dingus *ApplyImpulseAt(Vector2<float> i, Vector2<float> p)
         {
+            if (this == nullptr)
+            {
+                return nullptr;
+            }
             if (_physicsActive)
             {
                 b2Body_ApplyLinearImpulse(_bodyID, i, p, true);
@@ -299,6 +494,16 @@ namespace ENG
             else
             {
             }
+            return this;
+        }
+        Dingus *ApplyTorque(float t)
+        {
+            if (this == nullptr)
+            {
+                return nullptr;
+            }
+            b2Body_ApplyTorque(_bodyID, t, true);
+            return this;
         }
 
         // virtual update function that you override (if you want) in any class that uses Dingus as a parent class
@@ -310,11 +515,11 @@ namespace ENG
         inline static void UpdateAll()
         {
             b2World_Step(_worldID, 1.0 / 60.0, 4);
-            for (Dingus *d : _instances())
+            for (auto i = _instances.begin(); i != _instances.end(); ++i)
             {
-                if (d->_active)
+                if (i->get()->_active)
                 {
-                    d->_Update();
+                    i->get()->_Update();
                 }
             }
         }

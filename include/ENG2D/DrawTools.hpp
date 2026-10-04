@@ -46,13 +46,13 @@ namespace ENG
         }
 
     public:
-        inline static void DrawTexture(Camera *camera, Texture *texture, Vector2<float> position, float size = 1, float angle = 0, ColorRGBA color = ColorRGBA(255, 255, 255, 255))
+        inline static void DrawTexture(Camera *camera, Texture *texture, Vector2<float> position, float size = 1, Vector2<float> scale = Vector2<float>(1.0f, 1.0f), float angle = 0, ColorRGBA color = ColorRGBA(255, 255, 255, 255))
         {
 
             Vector2<float> pos = projectToCamera(camera, position);
             SDL_FRect r;
-            r.w = size * camera->zoom;// * texture->size.x;
-            r.h = size * camera->zoom;// * texture->size.y;
+            r.w = size * camera->zoom * texture->size.x * scale.x;
+            r.h = size * camera->zoom * texture->size.y * scale.y;
             r.x = pos.x - (r.w / 2);
             r.y = pos.y - (r.h / 2);
             Vector2<float> vr(r.x, r.y);
@@ -63,7 +63,7 @@ namespace ENG
                 SDL_SetTextureBlendMode(texture->pointer, SDL_BLENDMODE_BLEND);
                 SDL_SetTextureColorMod(texture->pointer, color.red, color.green, color.blue);
                 SDL_SetTextureAlphaMod(texture->pointer, color.alpha);
-                SDL_RenderTextureRotated(texture->renderer, texture->pointer, NULL, &r, angle + camera->angle, NULL, SDL_FLIP_NONE);
+                SDL_RenderTextureRotated(texture->window->renderer, texture->pointer, NULL, &r, angle + camera->angle, NULL, SDL_FLIP_NONE);
                 textureDrawCount++;
                 // SDL_DestroyTexture(texture->pointer);
             }
@@ -73,8 +73,8 @@ namespace ENG
 
             Vector2<float> pos = projectToCamera(camera, position);
             SDL_FRect r;
-            r.w = size.x * camera->zoom;// * texture->size.x;
-            r.h = size.y * camera->zoom;// * texture->size.y;
+            r.w = size.x * camera->zoom; // * texture->size.x;
+            r.h = size.y * camera->zoom; // * texture->size.y;
             r.x = pos.x - (r.w / 2);
             r.y = pos.y - (r.h / 2);
             Vector2<float> vr(r.x, r.y);
@@ -85,11 +85,44 @@ namespace ENG
                 SDL_SetTextureBlendMode(texture->pointer, SDL_BLENDMODE_BLEND);
                 SDL_SetTextureColorMod(texture->pointer, color.red, color.green, color.blue);
                 SDL_SetTextureAlphaMod(texture->pointer, color.alpha);
-                SDL_RenderTextureRotated(texture->renderer, texture->pointer, NULL, &r, angle + camera->angle, NULL, SDL_FLIP_NONE);
+                SDL_RenderTextureRotated(texture->window->renderer, texture->pointer, NULL, &r, angle + camera->angle, NULL, SDL_FLIP_NONE);
                 textureDrawCount++;
                 // SDL_DestroyTexture(texture->pointer);
             }
         }
+        inline static void DrawTexture(Texture *texture, Vector2<float> position, Vector2<float> size, float angle = 0, ColorRGBA color = ColorRGBA(255, 255, 255, 255))
+        {
+
+            SDL_FRect r;
+            r.w = size.x; // * texture->size.x;
+            r.h = size.y; // * texture->size.y;
+            r.x = position.x - (r.w / 2);
+            r.y = position.y - (r.h / 2);
+            Vector2<float> vr(r.x, r.y);
+
+            SDL_SetTextureBlendMode(texture->pointer, SDL_BLENDMODE_BLEND);
+            SDL_SetTextureColorMod(texture->pointer, color.red, color.green, color.blue);
+            SDL_SetTextureAlphaMod(texture->pointer, color.alpha);
+            SDL_RenderTextureRotated(texture->window->renderer, texture->pointer, NULL, &r, angle, NULL, SDL_FLIP_NONE);
+            textureDrawCount++;
+        }
+        inline static void DrawTexture(Texture *texture, Vector2<float> position, float size = 1.0f, Vector2<float> scale = Vector2<float>(1.0f, 1.0f), float angle = 0.0f, ColorRGBA color = ColorRGBA(255, 255, 255, 255))
+        {
+
+            SDL_FRect r;
+            r.w = size * texture->size.x * scale.x;
+            r.h = size * texture->size.y * scale.y;
+            r.x = position.x - (r.w / 2);
+            r.y = position.y - (r.h / 2);
+            Vector2<float> vr(r.x, r.y);
+
+            SDL_SetTextureBlendMode(texture->pointer, SDL_BLENDMODE_BLEND);
+            SDL_SetTextureColorMod(texture->pointer, color.red, color.green, color.blue);
+            SDL_SetTextureAlphaMod(texture->pointer, color.alpha);
+            SDL_RenderTextureRotated(texture->window->renderer, texture->pointer, NULL, &r, angle, NULL, SDL_FLIP_NONE);
+            textureDrawCount++;
+        }
+
         inline static void DrawAtlas(Camera *camera, Atlas *atlas, Vector2<float> position, float size = 1, float angle = 0, ColorRGBA color = ColorRGBA(255, 255, 255, 255))
         {
 
@@ -112,7 +145,7 @@ namespace ENG
                 SDL_SetTextureBlendMode(atlas->texture.pointer, SDL_BLENDMODE_BLEND);
                 SDL_SetTextureColorMod(atlas->texture.pointer, color.red, color.green, color.blue);
                 SDL_SetTextureAlphaMod(atlas->texture.pointer, color.alpha);
-                SDL_RenderTextureRotated(atlas->texture.renderer, atlas->texture.pointer, &s, &r, angle + camera->angle, NULL, SDL_FLIP_NONE);
+                SDL_RenderTextureRotated(atlas->texture.window->renderer, atlas->texture.pointer, &s, &r, angle + camera->angle, NULL, SDL_FLIP_NONE);
                 textureDrawCount++;
             }
         }
@@ -146,7 +179,7 @@ namespace ENG
                 SDL_SetTextureBlendMode(animatedTexture->atlas->texture.pointer, SDL_BLENDMODE_BLEND);
                 SDL_SetTextureColorMod(animatedTexture->atlas->texture.pointer, color.red, color.green, color.blue);
                 SDL_SetTextureAlphaMod(animatedTexture->atlas->texture.pointer, color.alpha);
-                SDL_RenderTextureRotated(animatedTexture->atlas->texture.renderer, animatedTexture->atlas->texture.pointer, &s, &r, angle + camera->angle, NULL, SDL_FLIP_NONE);
+                SDL_RenderTextureRotated(animatedTexture->atlas->texture.window->renderer, animatedTexture->atlas->texture.pointer, &s, &r, angle + camera->angle, NULL, SDL_FLIP_NONE);
                 textureDrawCount++;
             }
         }
@@ -190,7 +223,6 @@ namespace ENG
 
         inline static void DrawTri(Camera *camera, Vector2<float> corner1, Vector2<float> corner2, Vector2<float> corner3, ColorRGBA color = ColorRGBA(255, 255, 255, 255))
         {
-
             corner1 = projectToCamera(camera, corner1);
             corner2 = projectToCamera(camera, corner2);
             corner3 = projectToCamera(camera, corner3);

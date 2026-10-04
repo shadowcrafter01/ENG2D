@@ -24,7 +24,7 @@ namespace ENG
         {
         }
         Texture(Window *window, const char *path) : path{path},
-                                                    renderer{window->renderer.pointer}
+                                                    window{window}
         {
             Console::LogLoadStart((std::string) "Loading texture [" + path + "]");
 
@@ -45,7 +45,8 @@ namespace ENG
             state = true;
         }
 
-        SDL_Renderer *renderer;
+        //SDL_Renderer *renderer;
+        Window *window;
         const char *path;
         SDL_Texture *pointer;
         SDL_Surface *surface;

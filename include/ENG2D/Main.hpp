@@ -40,13 +40,16 @@ namespace ENG
     //     {
     //     }
 
-    inline static bool GAMESTATE = false;
-    inline static Timer timer;
-    inline static Console console = Console(&timer);
-    inline static Input input;
-    inline static DrawTools draw;
+    bool GAMESTATE = false;
+    Timer timer;
+    Console console = Console(&timer);
+    bool hasCustomCursor = false;
+    Texture *cursor;
+    Vector2<float> cursorScale;
+    // inline Input input;
+    // inline DrawTools draw;
 
-    inline static bool Init(const char *appname = "c++ project", const char *appversion = "0.0.0", const char *appidentifier = "com.name.engine")
+    bool Init(const char *appname = "c++ project", const char *appversion = "0.0.0", const char *appidentifier = "com.name.engine")
     {
         bool flag = false;
         console.LogLoadStart("Initializing engine");
@@ -75,7 +78,7 @@ namespace ENG
         return true;
     }
 
-    inline static void Event()
+    void Event()
     {
         SDL_Event Event;
         while (SDL_PollEvent(&Event))
@@ -95,52 +98,72 @@ namespace ENG
         }
     }
 
-    inline static bool Update()
+    bool Update()
     {
         Event();
+        if (hasCustomCursor)
+        {
+            DrawTools::DrawTexture(cursor, Input::GetMousePos(), 1.0f, cursorScale);
+        }
         Window::UpdateAll();
         Dingus::UpdateAll();
         timer.update();
-        draw.textureDrawCount = 0;
+        DrawTools::textureDrawCount = 0;
         return GAMESTATE;
     }
 
-    inline static void Shutdown()
+    void Shutdown()
     {
+        Dingus::DestroyAll();
+        b2DestroyWorld(Dingus::GetWorld());
         SDL_Quit();
         TTF_Quit();
     }
 
-    inline static Window CreateWindow(const char *title, Vector2<int> size, SDL_WindowFlags flags)
+    Window CreateWindow(const char *title, Vector2<int> size, SDL_WindowFlags flags)
     {
         return Window(title, size, flags);
     }
-    inline static Texture CreateTexture(Window *window, const char *path)
+    Texture CreateTexture(Window *window, const char *path)
     {
         return Texture(window, path);
     }
-    inline static Camera CreateCamera(Window *window, Vector2<double> position = Vector2<double>(0, 0), double zoom = 1, double angle = 0)
+    Camera CreateCamera(Window *window, Vector2<double> position = Vector2<double>(0, 0), double zoom = 1, double angle = 0)
     {
         return Camera(window, position, zoom, angle);
     }
-    inline static Font CreateFont(const char *path, int point)
+    Font CreateFont(const char *path, int point)
     {
         return Font(path, point);
     }
-    inline static Audio CreateAudio(const char *path)
+    Audio CreateAudio(const char *path)
     {
         return Audio(path);
     }
-    inline static File CreateFile(const char *path)
+    File CreateFile(const char *path)
     {
         return File(path);
     }
-    //inline static Dingus CreateDingus(Camera *camera, Texture *texture)
+    // inline Dingus CreateDingus(Camera *camera, Texture *texture)
     //{
-    //    Dingus dingus = Dingus(camera, texture);
-    //    return dingus;
-    //}
-    //};
+    //     Dingus dingus = Dingus(camera, texture);
+    //     return dingus;
+    // }
+    // };
+
+    // hides the OS cursor and displays provided texture instead
+    //
+
+    /// Hides OS cursor and displays provided texture at the mouse position instead
+    /// the custom image is rendered last, so always on top of everything else
+    /// also the texture draws at the center of the image so use that to control the "hotspot"
+    void SetCustomCursor(Texture *tex, Vector2<float> scale = Vector2<float>(1, 1))
+    {
+        SDL_HideCursor();
+        cursor = tex;
+        cursorScale = scale;
+        hasCustomCursor = true;
+    }
 
 };
 
