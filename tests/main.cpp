@@ -2,15 +2,15 @@
 #include <memory>
 #include <stdexcept>
 
-ENG::Window window = ENG::CreateWindow("le wrapler rawr", ENG::Vector2(640, 480), SDL_WINDOW_RESIZABLE);
+ENG::Window window = ENG::Window("le wrapler rawr", ENG::Vector2(640, 480), SDL_WINDOW_RESIZABLE);
 
-ENG::Camera camera = ENG::CreateCamera(&window);
+ENG::Camera camera = ENG::Camera(&window);
 
-ENG::Texture test = ENG::CreateTexture(&window, "billGates.bmp");
-ENG::Texture cursor = ENG::CreateTexture(&window, "cursor.png");
-ENG::Texture cursor2 = ENG::CreateTexture(&window, "cursorpressed.png");
+ENG::Texture test = ENG::Texture(&window, "billGates.bmp");
+ENG::Texture cursor = ENG::Texture(&window, "cursor.png");
+ENG::Texture cursor2 = ENG::Texture(&window, "cursorpressed.png");
 
-ENG::File file = ENG::CreateFile("test.json");
+ENG::File file = ENG::File("test.json");
 
 std::vector<ENG::Dingus *> balls;
 
@@ -45,16 +45,16 @@ int main()
     window.cursorScale = {2, 2};
 
     ENG::Dingus *ground = ENG::Dingus::Create(&camera, &test, ENG::Transform2<float>(0, -500, 5000, test.size.y));
-    ground->AssignCollisionShape(ENG::CollisionShape::Box(ground->GetTransform().size))->SetStatic();
+    ground->AssignCollisionShape(ENG::CollisionShape::Box(ground->GetTransform().size), 1, 0, 0.2)->SetStatic();
     ENG::Dingus *wall1 = ENG::Dingus::Create(&camera, &test, ENG::Transform2<float>(2500, 2000, test.size.x, 5000));
-    wall1->AssignCollisionShape(ENG::CollisionShape::Box(wall1->GetTransform().size))->SetStatic();
+    wall1->AssignCollisionShape(ENG::CollisionShape::Box(wall1->GetTransform().size), 1, 0, 1)->SetStatic();
     ENG::Dingus *wall2 = ENG::Dingus::Create(&camera, &test, ENG::Transform2<float>(-2500, 2000, test.size.x, 5000));
-    wall2->AssignCollisionShape(ENG::CollisionShape::Box(wall2->GetTransform().size))->SetStatic();
+    wall2->AssignCollisionShape(ENG::CollisionShape::Box(wall2->GetTransform().size), 1, 0, 1)->SetStatic();
 
-    for (size_t i = 0; i < 100; ++i)
+    for (size_t i = 0; i < 1; ++i)
     {
         ENG::Dingus *ball = ENG::Dingus::Create(&camera, &test, ENG::Transform2<float>(0, 128 * i, test.size));
-        ball->AssignCollisionShape(ENG::CollisionShape::Box(test.size), 1, 0.25, 0.5);
+        ball->AssignCollisionShape(ENG::CollisionShape::Box(test.size), 1, 0, 0.5);
         balls.push_back(ball);
     }
 

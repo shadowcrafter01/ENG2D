@@ -103,37 +103,6 @@ namespace ENG
         TTF_Quit();
     }
 
-    Window CreateWindow(const char *title, Vector2<int> size, SDL_WindowFlags flags)
-    {
-        return Window(title, size, flags);
-    }
-    Texture CreateTexture(Window *window, const char *path)
-    {
-        return Texture(window, path);
-    }
-    Camera CreateCamera(Window *window, Vector2<double> position = Vector2<double>(0, 0), double zoom = 1, double angle = 0)
-    {
-        return Camera(window, position, zoom, angle);
-    }
-    Font CreateFont(const char *path, int point)
-    {
-        return Font(path, point);
-    }
-    Audio CreateAudio(const char *path)
-    {
-        return Audio(path);
-    }
-    File CreateFile(const char *path)
-    {
-        return File(path);
-    }
-    // inline Dingus CreateDingus(Camera *camera, Texture *texture)
-    //{
-    //     Dingus dingus = Dingus(camera, texture);
-    //     return dingus;
-    // }
-    // };
-
 };
 
 #endif
