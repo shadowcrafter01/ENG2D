@@ -141,7 +141,7 @@ target_link_libraries(
         SDL3_image::SDL3_image
         SDL3_ttf::SDL3_ttf
         SDL3_mixer::SDL3_mixer
-        box2d
+        box2d::box2d
         nlohmann_json::nlohmann_json
 )
 
