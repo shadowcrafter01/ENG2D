@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.20.0)
 project(
     ENG2D
-    VERSION 0.1.0
+    #VERSION 0.1.0
     LANGUAGES C CXX
 )
 
@@ -95,7 +95,8 @@ set(BOX2D_DOCS OFF CACHE BOOL "" FORCE)
 set(BOX2D_BUILD_TESTBED OFF CACHE BOOL "" FORCE)
 set(BOX2D_BUILD_UNIT_TESTS OFF CACHE BOOL "" FORCE)
 set(BOX2D_BUILD_BENCHMARKS OFF CACHE BOOL "" FORCE)
-set(BOX2D_DOUBLE_PRECISION OFF)
+set(BOX2D_BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+#set(BOX2D_DOUBLE_PRECISION OFF)
 
 # ------------------------------------------------------------
 # nlohmann json
