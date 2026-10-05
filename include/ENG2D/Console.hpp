@@ -7,6 +7,13 @@
 #include <SDL3/SDL.h>
 // #include <Timer.hpp>
 #include <ENG2D/Timer.hpp>
+#include <atomic>
+#include <chrono>
+#include <cstdint>
+#include <thread>
+#include <iostream>
+#include <iomanip>
+#include <stdexcept>
 
 namespace ENG
 {
@@ -14,9 +21,20 @@ namespace ENG
     class Console
     {
     private:
+        const inline static auto start = std::chrono::steady_clock::now();
+
+        static double GetCurrentMS()
+        {
+            auto elapsed = std::chrono::steady_clock::now() - start;
+            uint64_t ns = std::chrono::duration_cast<std::chrono::nanoseconds>(elapsed).count();
+            currentMS = ns / 1000000.0;
+            return currentMS;
+        }
+
         static std::string reportCurrentMS()
         {
-            std::string time = std::to_string(std::round(timer->now_ms() * 100) / 100);
+            double ms = GetCurrentMS();
+            std::string time = std::to_string(std::round(ms * 100) / 100);
             std::string buffer = "";
             int decimal = 0;
             for (char i : time)
@@ -36,15 +54,11 @@ namespace ENG
             return "[" + buffer + "]";
         }
 
-        inline static Timer *timer;
+        // inline static Timer *timer;
         inline static double timeStore;
+        inline static double currentMS;
 
     public:
-        Console(Timer *timer_in)
-        {
-            timer = timer_in;
-        }
-
         static void Log(std::string message, std::string label = "")
         {
             std::cout << label << message << "\n";
@@ -73,7 +87,7 @@ namespace ENG
         static void LogLoadStart(std::string message)
         {
             std::cout << reportCurrentMS() << " -LOAD : " << message << "... ";
-            timeStore = timer->now_ms();
+            timeStore = currentMS;
         }
         static void LogLoadEnd(bool success, std::string follow_up = "")
         {
@@ -81,22 +95,22 @@ namespace ENG
             {
                 if (follow_up == "")
                 {
-                    std::cout << "Success in " << std::to_string(timer->now_ms() - timeStore) << "ms\n";
+                    std::cout << "Success in " << std::to_string(GetCurrentMS() - timeStore) << "ms\n";
                 }
                 else
                 {
-                    std::cout << "Success in " << std::to_string(timer->now_ms() - timeStore) << "ms -> " << follow_up << "\n";
+                    std::cout << "Success in " << std::to_string(GetCurrentMS() - timeStore) << "ms -> " << follow_up << "\n";
                 }
             }
             else
             {
                 if (follow_up == "")
                 {
-                    std::cout << "Failed in " << std::to_string(timer->now_ms() - timeStore) << "ms -> " << SDL_GetError() << "\n";
+                    std::cout << "Failed in " << std::to_string(GetCurrentMS() - timeStore) << "ms -> " << SDL_GetError() << "\n";
                 }
                 else
                 {
-                    std::cout << "Failed in " << std::to_string(timer->now_ms() - timeStore) << "ms -> " << follow_up << " -> " << SDL_GetError() << "\n";
+                    std::cout << "Failed in " << std::to_string(GetCurrentMS() - timeStore) << "ms -> " << follow_up << " -> " << SDL_GetError() << "\n";
                 }
             }
         }

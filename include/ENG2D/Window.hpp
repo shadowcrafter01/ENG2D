@@ -68,7 +68,10 @@ namespace ENG
         SDL_Window *pointer;
         Renderer renderer;
         TTF_TextEngine *ttfEngine;
-
+        SDL_Texture *cursor;
+        Vector2<int> cursorSize = Vector2<int>(0, 0);
+        Vector2<float> cursorScale = Vector2<int>(1, 1);
+        bool flag_hasCustomCursor = false;
         const char *title;
         Vector2<int> size;
         Vector2<int> center;
@@ -89,8 +92,58 @@ namespace ENG
                 Console::LogError((std::string) "Error applying texture file [" + path + "] to window [" + title + "] icon");
             }
         }
+        void SetCustomCursor(const char *path)
+        {
+            SDL_Surface *surface = IMG_Load(path);
+            cursor = SDL_CreateTextureFromSurface(renderer, surface);
+            if (cursor == NULL)
+            {
+                return;
+            }
+            cursorSize = {surface->w, surface->h};
+            if (!flag_hasCustomCursor)
+            {
+                SDL_HideCursor();
+                flag_hasCustomCursor = true;
+            }
+        }
+        void SetCustomCursor(SDL_Texture *texture, Vector2<int> size)
+        {
+            cursor = texture;
+            cursorSize = size;
+            if (!flag_hasCustomCursor)
+            {
+                SDL_HideCursor();
+                flag_hasCustomCursor = true;
+            }
+        }
+        void SetCustomCursor(SDL_Surface *surface)
+        {
+            cursor = SDL_CreateTextureFromSurface(renderer, surface);
+            if (cursor == NULL)
+            {
+                return;
+            }
+            cursorSize = {surface->w, surface->h};
+            if (!flag_hasCustomCursor)
+            {
+                SDL_HideCursor();
+                flag_hasCustomCursor = true;
+            }
+        }
         void Update()
         {
+            if (flag_hasCustomCursor)
+            {
+                float x, y;
+                SDL_GetMouseState(&x, &y);
+                SDL_FRect r;
+                r.w = cursorSize.x * cursorScale.x;
+                r.h = cursorSize.y * cursorScale.y;
+                r.x = x - (r.w / 2);
+                r.y = y - (r.h / 2);
+                SDL_RenderTexture(renderer, cursor, NULL, &r);
+            }
             SDL_SetRenderTarget(renderer, NULL);
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
             SDL_SetRenderScale(renderer, 1, 1);

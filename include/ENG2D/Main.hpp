@@ -32,27 +32,14 @@
 namespace ENG
 {
 
-    // class Engine
-    //{
-    // private:
-    // public:
-    //     Engine(/* args */)
-    //     {
-    //     }
-
     bool GAMESTATE = false;
     Timer timer;
-    Console console = Console(&timer);
-    bool hasCustomCursor = false;
-    Texture *cursor;
-    Vector2<float> cursorScale;
-    // inline Input input;
-    // inline DrawTools draw;
+
 
     bool Init(const char *appname = "c++ project", const char *appversion = "0.0.0", const char *appidentifier = "com.name.engine")
     {
         bool flag = false;
-        console.LogLoadStart("Initializing engine");
+        Console::LogLoadStart("Initializing engine");
         // metadata
         if (!SDL_SetAppMetadata(appname, appversion, appidentifier))
         {
@@ -62,17 +49,17 @@ namespace ENG
         // init sdl
         if (!SDL_Init(SDL_INIT_VIDEO))
         {
-            console.LogLoadEnd(false, "Error initializing SDL3");
+            Console::LogLoadEnd(false, "Error initializing SDL3");
             return false;
         }
 
         if (flag)
         {
-            console.LogLoadEnd(true, (std::string) "Non-fatal errors encountered -> " + SDL_GetError());
+            Console::LogLoadEnd(true, (std::string) "Non-fatal errors encountered -> " + SDL_GetError());
         }
         else
         {
-            console.LogLoadEnd(true, "Engine started!");
+            Console::LogLoadEnd(true, "Engine started!");
         }
         GAMESTATE = true;
         return true;
@@ -101,10 +88,6 @@ namespace ENG
     bool Update()
     {
         Event();
-        if (hasCustomCursor)
-        {
-            DrawTools::DrawTexture(cursor, Input::GetMousePos(), 1.0f, cursorScale);
-        }
         Window::UpdateAll();
         Dingus::UpdateAll();
         timer.update();
@@ -150,20 +133,6 @@ namespace ENG
     //     return dingus;
     // }
     // };
-
-    // hides the OS cursor and displays provided texture instead
-    //
-
-    /// Hides OS cursor and displays provided texture at the mouse position instead
-    /// the custom image is rendered last, so always on top of everything else
-    /// also the texture draws at the center of the image so use that to control the "hotspot"
-    void SetCustomCursor(Texture *tex, Vector2<float> scale = Vector2<float>(1, 1))
-    {
-        SDL_HideCursor();
-        cursor = tex;
-        cursorScale = scale;
-        hasCustomCursor = true;
-    }
 
 };
 

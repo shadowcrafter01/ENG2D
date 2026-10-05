@@ -19,6 +19,7 @@
 
 #include <memory>
 #include <utility>
+#include <algorithm>
 
 namespace ENG
 {
@@ -49,6 +50,31 @@ namespace ENG
             Update();
         }
 
+        inline static size_t _zeroIndex = 0;
+        static void _UpdateZeroIndex()
+        {
+            auto i = std::lower_bound(
+                _instances.begin(),
+                _instances.end(),
+                0.0f,
+                [](const std::unique_ptr<Dingus> &object, float layer)
+                {
+                    return object->_renderLayer < layer;
+                });
+
+            _zeroIndex = static_cast<size_t>(std::distance(_instances.begin(), i));
+        }
+
+        static void _ResortInstances()
+        {
+            std::stable_sort(_instances.begin(),
+                             _instances.end(),
+                             [](const std::unique_ptr<Dingus> &a, const std::unique_ptr<Dingus> &b)
+                             {
+                                 return a->_renderLayer < b->_renderLayer;
+                             });
+        }
+
         b2BodyId _bodyID;
         static inline b2WorldDef _worldDef = b2DefaultWorldDef();
         static inline b2WorldId _worldID = b2CreateWorld(&_worldDef);
@@ -56,6 +82,7 @@ namespace ENG
         CollisionShape collisionShape;
         Camera *_camera = nullptr;
         Texture *_texture = nullptr;
+        float _renderLayer = 0;
 
         bool _active = true;
         bool _physicsActive = false;
@@ -94,29 +121,37 @@ namespace ENG
         static Dingus *Create(Camera *camera, Transform2<float> transform)
         {
             auto dngs = std::unique_ptr<Dingus>(new Dingus(camera, transform));
+            dngs->_renderLayer = 0.0f;
             Dingus *ptr = dngs.get();
-            _instances.push_back(std::move(dngs));
+            _instances.insert(_instances.begin() + _zeroIndex, std::move(dngs));
+            ++_zeroIndex;
             return ptr;
         }
         static Dingus *Create(Camera *camera, Vector2<float> pos = Vector2<float>(0, 0), float angle = 0, Vector2<float> size = Vector2<float>(0, 0))
         {
             auto dngs = std::unique_ptr<Dingus>(new Dingus(camera, pos, angle, size));
+            dngs->_renderLayer = 0.0f;
             Dingus *ptr = dngs.get();
-            _instances.push_back(std::move(dngs));
+            _instances.insert(_instances.begin() + _zeroIndex, std::move(dngs));
+            ++_zeroIndex;
             return ptr;
         }
         static Dingus *Create(Camera *camera, Texture *texture, Transform2<float> transform)
         {
             auto dngs = std::unique_ptr<Dingus>(new Dingus(camera, texture, transform));
+            dngs->_renderLayer = 0.0f;
             Dingus *ptr = dngs.get();
-            _instances.push_back(std::move(dngs));
+            _instances.insert(_instances.begin() + _zeroIndex, std::move(dngs));
+            ++_zeroIndex;
             return ptr;
         }
         static Dingus *Create(Camera *camera, Texture *texture, Vector2<float> pos = Vector2<float>(0, 0), float angle = 0, Vector2<float> size = Vector2<float>(0, 0))
         {
             auto dngs = std::unique_ptr<Dingus>(new Dingus(camera, texture, pos, angle, size));
+            dngs->_renderLayer = 0.0f;
             Dingus *ptr = dngs.get();
-            _instances.push_back(std::move(dngs));
+            _instances.insert(_instances.begin() + _zeroIndex, std::move(dngs));
+            ++_zeroIndex;
             return ptr;
         }
         ~Dingus()
@@ -146,11 +181,11 @@ namespace ENG
             {
                 if (i->get() == this)
                 {
-                    i->get()->_physicsActive = false;
                     _instances.erase(i);
                     return;
                 }
             }
+            _ResortInstances();
         }
         static void DestroyAll()
         {
@@ -305,6 +340,14 @@ namespace ENG
             }
             return _camera;
         }
+        float GetRenderLayer()
+        {
+            if (this == nullptr)
+            {
+                return 0;
+            }
+            return _renderLayer;
+        }
         static Dingus *GetNearest(Vector2<float> position)
         {
             Dingus *nearestDingus = nullptr;
@@ -429,11 +472,23 @@ namespace ENG
             b2Body_SetLinearVelocity(_bodyID, v);
             return this;
         }
+        Dingus *SetRenderLayer(float layer)
+        {
+            if (this == nullptr)
+            {
+                return nullptr;
+            }
+            if (_renderLayer == layer)
+            {
+                return this;
+            }
+            _renderLayer = layer;
+            _ResortInstances();
+        }
         static void SetWorldGravity(Vector2<float> v)
         {
             b2World_SetGravity(_worldID, v);
         }
-
 
         // apply functions
         Dingus *ApplyForce(Vector2<float> f)

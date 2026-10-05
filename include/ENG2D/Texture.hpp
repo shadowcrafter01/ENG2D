@@ -45,13 +45,27 @@ namespace ENG
             state = true;
         }
 
-        //SDL_Renderer *renderer;
+        // SDL_Renderer *renderer;
         Window *window;
         const char *path;
         SDL_Texture *pointer;
         SDL_Surface *surface;
         bool state = false;
         Vector2<int> size;
+
+        operator SDL_Texture *()
+        {
+            return pointer;
+        }
+        operator SDL_Surface *()
+        {
+            return surface;
+        }
+        template <typename T>
+        operator Vector2<T>()
+        {
+            return Vector2<T>((T)size.x, (T)size.y);
+        }
     };
 
 };
