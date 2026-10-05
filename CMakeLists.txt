@@ -23,6 +23,10 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY
 
 include(FetchContent)
 
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+set(SDL_SHARED OFF CACHE BOOL "" FORCE)
+set(SDL_STATIC ON CACHE BOOL "" FORCE)
+
 # ------------------------------------------------------------
 # SDL3
 # ------------------------------------------------------------
@@ -84,10 +88,7 @@ FetchContent_Declare(
 set(BOX2D_SAMPLES OFF CACHE BOOL "" FORCE)
 set(BOX2D_UNIT_TESTS OFF CACHE BOOL "" FORCE)
 set(BOX2D_DOCS OFF CACHE BOOL "" FORCE)
-set(BOX2D_BUILD_TESTBED OFF CACHE BOOL "" FORCE)
-set(BOX2D_BUILD_UNIT_TESTS OFF CACHE BOOL "" FORCE)
-set(BOX2D_BUILD_BENCHMARKS OFF CACHE BOOL "" FORCE)
-set(BOX2D_BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+set(BOX2D_BENCHMARKS OFF CACHE BOOL "" FORCE)
 #set(BOX2D_DOUBLE_PRECISION OFF)
 FetchContent_Declare(
     box2d
