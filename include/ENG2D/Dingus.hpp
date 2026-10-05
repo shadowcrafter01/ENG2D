@@ -206,9 +206,19 @@ namespace ENG
             bodyDef.position = _transform.position;
             _bodyID = b2CreateBody(_worldID, &bodyDef);
             b2ShapeDef shapeDef = b2DefaultShapeDef();
+            if (collider.flag_layerByGroupIndex)
+            {
+                shapeDef.filter.groupIndex = collider.group;
+            }
+            else
+            {
+                shapeDef.filter.categoryBits = collider.category;
+                shapeDef.filter.maskBits = collider.mask;
+            }
             shapeDef.density = density;
             shapeDef.material.friction = friction;
             shapeDef.material.restitution = restitution;
+            
 
             switch (collisionShape.type)
             {
@@ -363,7 +373,7 @@ namespace ENG
         {
             return _instances;
         }
-        static b2WorldId GetWorld()
+        static const b2WorldId GetWorld()
         {
             return _worldID;
         }
