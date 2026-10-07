@@ -14,26 +14,25 @@ ENG::File file = ENG::File("test.json");
 
 ENG::Timer timer;
 
-std::vector<ENG::Dingus *> balls;
+//std::vector<ENG::Dingus *> balls;
 
-ENG::Dingus *nearest = nullptr;
-bool flag_onMouseDown = false;
+//ENG::Dingus *nearest = nullptr;
 void onMouseDownL()
 {
-    nearest->SetRenderLayer(0);
+    //nearest->SetRenderLayer(0);
     window.SetCustomCursor(cursor2);
-    nearest = ENG::Dingus::GetNearest(ENG::Input::GetMouseWorldPos(&camera));
-    nearest->SetRenderLayer(1);
+    //nearest = ENG::Dingus::GetNearest(ENG::Input::GetMouseWorldPos(&camera));
+    //nearest->SetRenderLayer(1);
 }
 
 void onMouseDownR()
 {
     // ENG::Dingus::GetNearest(ENG::Input::GetMouseWorldPos(&camera))->Destroy();
-    if (balls.size() > 0)
-    {
-        balls.at(0)->Destroy();
-        balls.erase(balls.begin());
-    }
+    //if (balls.size() > 0)
+    //{
+    //    balls.at(0)->Destroy();
+    //    balls.erase(balls.begin());
+    //}
 }
 
 void onMouseUpL()
@@ -48,19 +47,19 @@ int main()
     window.SetCustomCursor(cursor);
     window.cursorScale = {2, 2};
 
-    ENG::Dingus *ground = ENG::Dingus::Create(&camera, &test, ENG::Transform2<float>(0, -500, 5000, test.size.y));
-    ground->AssignCollisionShape(ENG::CollisionShape::Box(ground->GetTransform().size, 1, 2), 1, 0.25, 0.5)->SetStatic();
-    ENG::Dingus *wall1 = ENG::Dingus::Create(&camera, &test, ENG::Transform2<float>(2500, 2000, test.size.x, 5000));
-    wall1->AssignCollisionShape(ENG::CollisionShape::Box(wall1->GetTransform().size, 1, 2), 1, 0.25, 0.5)->SetStatic();
-    ENG::Dingus *wall2 = ENG::Dingus::Create(&camera, &test, ENG::Transform2<float>(-2500, 2000, test.size.x, 5000));
-    wall2->AssignCollisionShape(ENG::CollisionShape::Box(wall2->GetTransform().size, 1, 2), 1, 0.25, 0.5)->SetStatic();
+    //ENG::Dingus *ground = ENG::Dingus::Create(&camera, &test, ENG::Transform2<float>(0, -500, 5000, test.size.y));
+    //ground->AssignCollisionShape(ENG::CollisionShape::Box(ground->GetTransform().size, 1, 2), 1, 0.25, 0.5)->SetStatic();
+    //ENG::Dingus *wall1 = ENG::Dingus::Create(&camera, &test, ENG::Transform2<float>(2500, 2000, test.size.x, 5000));
+    //wall1->AssignCollisionShape(ENG::CollisionShape::Box(wall1->GetTransform().size, 1, 2), 1, 0.25, 0.5)->SetStatic();
+    //ENG::Dingus *wall2 = ENG::Dingus::Create(&camera, &test, ENG::Transform2<float>(-2500, 2000, test.size.x, 5000));
+    //wall2->AssignCollisionShape(ENG::CollisionShape::Box(wall2->GetTransform().size, 1, 2), 1, 0.25, 0.5)->SetStatic();
 
-    for (size_t i = 0; i < 100; ++i)
-    {
-        ENG::Dingus *ball = ENG::Dingus::Create(&camera, &test, ENG::Transform2<float>(0, 128 * i, test.size));
-        ball->AssignCollisionShape(ENG::CollisionShape::Box(test.size, 2, 1), 1, 0.25, 0.5);
-        balls.push_back(ball);
-    }
+    //for (size_t i = 0; i < 100; ++i)
+    //{
+    //    ENG::Dingus *ball = ENG::Dingus::Create(&camera, &test, ENG::Transform2<float>(0, 128 * i, test.size));
+    //    ball->AssignCollisionShape(ENG::CollisionShape::Box(test.size, 2, 1), 1, 0.25, 0.5);
+    //    balls.push_back(ball);
+    //}
 
     double value;
     file.readProperty("value", &value, 10.0);
@@ -106,7 +105,7 @@ int main()
 
         if (ENG::Input::GetMouseState(SDL_BUTTON_LEFT))
         {
-            nearest->ApplyForce((ENG::Input::GetMouseWorldPos(&camera) - nearest->GetPosition()).Scale(500, true));
+            //nearest->ApplyForce((ENG::Input::GetMouseWorldPos(&camera) - nearest->GetPosition()).Scale(500, true));
         }
         // window.cursorScale = ENG::Vector2<float>((cosf(ENG::timer.now_s() * 10.0f) * 0.5f) + 2.0f, (sinf(ENG::timer.now_s() * 10.0f) * 0.5f) + 2.0f);
     }

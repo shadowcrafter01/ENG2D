@@ -167,7 +167,7 @@ namespace ENG
             _mouseUpFunctionsM.push_back(function);
         }
 
-        //// raw mouse state (for getting inputs from random buttons besides R L or M)
+        // raw mouse state (for getting inputs from random buttons besides R L or M)
         static bool GetMouseState(Uint8 button)
         {
             return SDL_GetMouseState(NULL, NULL) == button;
