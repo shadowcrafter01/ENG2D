@@ -12,14 +12,18 @@ ENG::Texture cursor2 = ENG::Texture(&window, "cursorpressed.png");
 
 ENG::File file = ENG::File("test.json");
 
+ENG::Timer timer;
+
 std::vector<ENG::Dingus *> balls;
 
 ENG::Dingus *nearest = nullptr;
 bool flag_onMouseDown = false;
 void onMouseDownL()
 {
+    nearest->SetRenderLayer(0);
     window.SetCustomCursor(cursor2);
     nearest = ENG::Dingus::GetNearest(ENG::Input::GetMouseWorldPos(&camera));
+    nearest->SetRenderLayer(1);
 }
 
 void onMouseDownR()
@@ -71,31 +75,33 @@ int main()
 
     while (ENG::Update())
     {
+        timer.Update();
+
         SDL_Delay(1);
 
         if (ENG::Input::keyState(SDL_SCANCODE_W))
         {
-            camera.position.y += 200.0 / camera.zoom * ENG::timer.delta;
+            camera.position.y += 200.0 / camera.zoom * timer.delta;
         }
         if (ENG::Input::keyState(SDL_SCANCODE_A))
         {
-            camera.position.x -= 200.0 / camera.zoom * ENG::timer.delta;
+            camera.position.x -= 200.0 / camera.zoom * timer.delta;
         }
         if (ENG::Input::keyState(SDL_SCANCODE_S))
         {
-            camera.position.y -= 200.0 / camera.zoom * ENG::timer.delta;
+            camera.position.y -= 200.0 / camera.zoom * timer.delta;
         }
         if (ENG::Input::keyState(SDL_SCANCODE_D))
         {
-            camera.position.x += 200.0 / camera.zoom * ENG::timer.delta;
+            camera.position.x += 200.0 / camera.zoom * timer.delta;
         }
         if (ENG::Input::keyState(SDL_SCANCODE_UP))
         {
-            camera.zoom += 1.0 * camera.zoom * ENG::timer.delta;
+            camera.zoom += 1.0 * camera.zoom * timer.delta;
         }
         if (ENG::Input::keyState(SDL_SCANCODE_DOWN))
         {
-            camera.zoom -= 1.0 * camera.zoom * ENG::timer.delta;
+            camera.zoom -= 1.0 * camera.zoom * timer.delta;
         }
 
         if (ENG::Input::GetMouseState(SDL_BUTTON_LEFT))
@@ -105,7 +111,7 @@ int main()
         // window.cursorScale = ENG::Vector2<float>((cosf(ENG::timer.now_s() * 10.0f) * 0.5f) + 2.0f, (sinf(ENG::timer.now_s() * 10.0f) * 0.5f) + 2.0f);
     }
 
-    file.writeProperty("value", ENG::timer.FPS);
+    file.writeProperty("value", timer.fps);
     ENG::Shutdown();
     return 0;
 }

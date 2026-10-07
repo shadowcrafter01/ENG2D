@@ -489,6 +489,7 @@ namespace ENG
             }
             _renderLayer = layer;
             _ResortInstances();
+            return this;
         }
         static void SetWorldGravity(Vector2<float> v)
         {
