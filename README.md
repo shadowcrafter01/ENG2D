@@ -14,7 +14,13 @@ pacman -S mingw-w64-x86_64-gcc
 
 pacman -S mingw-w64-x86_64-gdb
 
+pacman -S mingw-w64-x86_64-toolchain
+
+pacman -S mingw-w64-x86_64-make
+
 pacman -S mingw-w64-x86_64-cmake
+
+pacman -S mingw-w64-x86_64-cmake mingw-w64-x86_64-extra-cmake-modules
 
 pacman -S mingw-w64-x86_64-freetype
 

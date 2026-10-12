@@ -21,19 +21,6 @@
             }
         },
         {
-            "name": "windows-release",
-            "displayName": "Windows - MinGW64 Release",
-            "generator": "MinGW Makefiles",
-            "binaryDir": "${sourceDir}/build/windows-release",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release",
-                "CMAKE_C_COMPILER": "C:/msys64/mingw64/bin/gcc.exe",
-                "CMAKE_CXX_COMPILER": "C:/msys64/mingw64/bin/g++.exe",
-                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
-                "ENG2D_BUILD_TESTS": "OFF"
-            }
-        },
-        {
             "name": "linux-debug",
             "displayName": "Linux - GCC Debug",
             "generator": "Unix Makefiles",
@@ -45,19 +32,6 @@
                 "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
                 "ENG2D_BUILD_TESTS": "ON"
             }
-        },
-        {
-            "name": "linux-release",
-            "displayName": "Linux - GCC Release",
-            "generator": "Unix Makefiles",
-            "binaryDir": "${sourceDir}/build/linux-release",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release",
-                "CMAKE_C_COMPILER": "gcc",
-                "CMAKE_CXX_COMPILER": "g++",
-                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
-                "ENG2D_BUILD_TESTS": "OFF"
-            }
         }
     ],
     "buildPresets": [
@@ -66,16 +40,8 @@
             "configurePreset": "windows-debug"
         },
         {
-            "name": "windows-release",
-            "configurePreset": "windows-release"
-        },
-        {
             "name": "linux-debug",
             "configurePreset": "linux-debug"
-        },
-        {
-            "name": "linux-release",
-            "configurePreset": "linux-release"
         }
     ]
 }

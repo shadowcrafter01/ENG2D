@@ -15,8 +15,6 @@ target_compile_features(
         cxx_std_20
 )
 
-# copy runtime DLLs next to the executable on Windows
-
 #file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/tests/assets DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR}/bin)
 
