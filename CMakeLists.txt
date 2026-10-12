@@ -21,6 +21,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY
     "${CMAKE_BINARY_DIR}/lib"
 )
 
+include(GNUInstallDirs)
 include(FetchContent)
 
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
