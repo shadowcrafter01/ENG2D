@@ -9,6 +9,7 @@ ENG::Camera camera = ENG::Camera(&window);
 ENG::Texture test = ENG::Texture(&window, "assets/textures/billGates.bmp");
 ENG::Texture cursor = ENG::Texture(&window, "assets/textures/cursor.png");
 ENG::Texture cursor2 = ENG::Texture(&window, "assets/textures/cursorpressed.png");
+ENG::Texture chud = ENG::Texture(&window, "assets/textures/chud.png");
 
 ENG::File file = ENG::File("test.json");
 
@@ -47,17 +48,17 @@ int main()
     window.SetCustomCursor(cursor);
     window.cursorScale = {2, 2};
 
-    ENG::Dingus *ground = ENG::Dingus::Create(&camera, &test, ENG::Transform2<float>(0, -500, 5000, test.size.y));
+    ENG::Dingus *ground = ENG::Dingus::Create(&camera, &chud, ENG::Transform2<float>(0, -500, 5000, chud.size.y));
     ground->AssignCollisionShape(ENG::CollisionShape::Box(ground->GetTransform().size), 1, 0.25, 0.5)->SetStatic();
-    ENG::Dingus *wall1 = ENG::Dingus::Create(&camera, &test, ENG::Transform2<float>(2500, 2000, test.size.x, 5000));
+    ENG::Dingus *wall1 = ENG::Dingus::Create(&camera, &chud, ENG::Transform2<float>(2500, 2000, chud.size.x, 5000));
     wall1->AssignCollisionShape(ENG::CollisionShape::Box(wall1->GetTransform().size), 1, 0.25, 0.5)->SetStatic();
-    ENG::Dingus *wall2 = ENG::Dingus::Create(&camera, &test, ENG::Transform2<float>(-2500, 2000, test.size.x, 5000));
+    ENG::Dingus *wall2 = ENG::Dingus::Create(&camera, &chud, ENG::Transform2<float>(-2500, 2000, chud.size.x, 5000));
     wall2->AssignCollisionShape(ENG::CollisionShape::Box(wall2->GetTransform().size), 1, 0.25, 0.5)->SetStatic();
 
-    for (size_t i = 0; i < 10; ++i)
+    for (size_t i = 0; i < 50; ++i)
     {
-        ENG::Dingus *ball = ENG::Dingus::Create(&camera, &test, ENG::Transform2<float>(0, 128 * i, test.size));
-        ball->AssignCollisionShape(ENG::CollisionShape::Box(test.size), 1, 0.25, 0.5);
+        ENG::Dingus *ball = ENG::Dingus::Create(&camera, &chud, ENG::Transform2<float>(0, 128 * i, chud.size));
+        ball->AssignCollisionShape(ENG::CollisionShape::Box(chud.size), 1, 0.25, 0.5);
         balls.push_back(ball);
     }
 
