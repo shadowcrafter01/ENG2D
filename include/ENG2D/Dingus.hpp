@@ -73,6 +73,8 @@ namespace ENG
         b2BodyId _bodyID;
         static inline b2WorldDef _worldDef = b2DefaultWorldDef();
         static inline b2WorldId _worldID = b2CreateWorld(&_worldDef);
+        static inline float _worldTstep = 1.0f / 60.0f;
+        static inline int _worldSubsteps = 8;
         Transform2<float> _transform = Transform2<float>(0, 0, 1, 1, 0);
         CollisionShape collisionShape;
         Camera *_camera = nullptr;
@@ -218,7 +220,6 @@ namespace ENG
             shapeDef.density = density;
             shapeDef.material.friction = friction;
             shapeDef.material.restitution = restitution;
-            
 
             switch (collisionShape.type)
             {
@@ -495,6 +496,10 @@ namespace ENG
         {
             b2World_SetGravity(_worldID, v);
         }
+        static void SetWorldTimeStep(float t)
+        {
+            _worldTstep = t;
+        }
 
         // apply functions
         Dingus *ApplyForce(Vector2<float> f)
@@ -575,7 +580,7 @@ namespace ENG
         // update all function called by the engine, no touchie
         inline static void UpdateAll()
         {
-            b2World_Step(_worldID, 1.0 / 60.0, 4);
+            b2World_Step(_worldID, _worldTstep, _worldSubsteps);
             for (auto i = _instances.begin(); i != _instances.end(); ++i)
             {
                 if (i->get()->_active)
