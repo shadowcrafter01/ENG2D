@@ -19,24 +19,33 @@ namespace ENG
     class DrawTools
     {
     private:
-        inline static Vector2<float> projectToCamera(Camera *camera, Vector2<float> vector)
+        static Vector2<float> projectToCamera(Camera *camera, Vector2<float> vector)
         {
             Vector2<float> out = vector;
 
+            //offset by camera pos
             out.x -= camera->position.x;
             out.y -= camera->position.y;
 
-            out *= camera->zoom;
+            //scale by zoom
+            if (camera->zoom != 1) out *= camera->zoom;
 
+            //rotate by camera angle
             out.Rotate(-camera->angle);
-            out.y *= -1;
 
-            out.x += camera->window->center.x;
-            out.y += camera->window->center.y;
+            //flip y axis
+            out.y = -out.y;
+
+            //center on window
+            out.x += camera->window->center.x / camera->window->renderer.scale.x;
+            out.y += camera->window->center.y / camera->window->renderer.scale.y;
+
+            //scale by renderer scale
+            //if (camera->window->renderer.scale != Vector2<int>(1,1)) out /= camera->window->renderer.scale;
 
             return out;
         }
-        inline static bool onscreen(Camera *camera, Vector2<float> *vector, float size)
+        static bool onscreen(Camera *camera, Vector2<float> *vector, float size)
         {
             if (vector->x + 2 * size < 0 || vector->y + 2 * size < 0 || vector->x - size > camera->window->size.x || vector->y - size > camera->window->size.y)
             {
@@ -46,7 +55,7 @@ namespace ENG
         }
 
     public:
-        inline static void DrawTexture(Camera *camera, Texture *texture, Vector2<float> position, float size = 1, Vector2<float> scale = Vector2<float>(1.0f, 1.0f), float angle = 0, ColorRGBA color = ColorRGBA(255, 255, 255, 255))
+        static void DrawTexture(Camera *camera, Texture *texture, Vector2<float> position, float size = 1, Vector2<float> scale = Vector2<float>(1.0f, 1.0f), float angle = 0, ColorRGBA color = ColorRGBA(255, 255, 255, 255))
         {
 
             Vector2<float> pos = projectToCamera(camera, position);
@@ -68,7 +77,7 @@ namespace ENG
                 // SDL_DestroyTexture(texture->pointer);
             }
         }
-        inline static void DrawTexture(Camera *camera, Texture *texture, Vector2<float> position, Vector2<float> size, float angle = 0, ColorRGBA color = ColorRGBA(255, 255, 255, 255))
+        static void DrawTexture(Camera *camera, Texture *texture, Vector2<float> position, Vector2<float> size, float angle = 0, ColorRGBA color = ColorRGBA(255, 255, 255, 255))
         {
 
             Vector2<float> pos = projectToCamera(camera, position);
@@ -90,7 +99,7 @@ namespace ENG
                 // SDL_DestroyTexture(texture->pointer);
             }
         }
-        inline static void DrawTexture(Texture *texture, Vector2<float> position, Vector2<float> size, float angle = 0, ColorRGBA color = ColorRGBA(255, 255, 255, 255))
+        static void DrawTexture(Texture *texture, Vector2<float> position, Vector2<float> size, float angle = 0, ColorRGBA color = ColorRGBA(255, 255, 255, 255))
         {
 
             SDL_FRect r;
@@ -106,7 +115,7 @@ namespace ENG
             SDL_RenderTextureRotated(texture->window->renderer, texture->pointer, NULL, &r, angle, NULL, SDL_FLIP_NONE);
             textureDrawCount++;
         }
-        inline static void DrawTexture(Texture *texture, Vector2<float> position, float size = 1.0f, Vector2<float> scale = Vector2<float>(1.0f, 1.0f), float angle = 0.0f, ColorRGBA color = ColorRGBA(255, 255, 255, 255))
+        static void DrawTexture(Texture *texture, Vector2<float> position, float size = 1.0f, Vector2<float> scale = Vector2<float>(1.0f, 1.0f), float angle = 0.0f, ColorRGBA color = ColorRGBA(255, 255, 255, 255))
         {
 
             SDL_FRect r;
@@ -123,7 +132,7 @@ namespace ENG
             textureDrawCount++;
         }
 
-        inline static void DrawAtlas(Camera *camera, Atlas *atlas, Vector2<float> position, float size = 1, float angle = 0, ColorRGBA color = ColorRGBA(255, 255, 255, 255))
+        static void DrawAtlas(Camera *camera, Atlas *atlas, Vector2<float> position, float size = 1, float angle = 0, ColorRGBA color = ColorRGBA(255, 255, 255, 255))
         {
 
             Vector2<float> pos = projectToCamera(camera, position);
@@ -149,7 +158,7 @@ namespace ENG
                 textureDrawCount++;
             }
         }
-        inline static void DrawAnimatedTexture(Camera *camera, AnimatedTexture *animatedTexture, Vector2<float> position, int frame = -1, float size = 1, float angle = 0, ColorRGBA color = ColorRGBA(255, 255, 255, 255))
+        static void DrawAnimatedTexture(Camera *camera, AnimatedTexture *animatedTexture, Vector2<float> position, int frame = -1, float size = 1, float angle = 0, ColorRGBA color = ColorRGBA(255, 255, 255, 255))
         {
             if (frame == -1)
             {
@@ -184,7 +193,7 @@ namespace ENG
             }
         }
 
-        inline static void DrawFont(Camera *camera, Font *font, std::string message, Vector2<float> position, float size = 1, float angle = 0, ColorRGBA color = ColorRGBA(255, 255, 255, 255), Vector2<float> scale = Vector2<float>(1, 1))
+        static void DrawFont(Camera *camera, Font *font, std::string message, Vector2<float> position, float size = 1, float angle = 0, ColorRGBA color = ColorRGBA(255, 255, 255, 255), Vector2<float> scale = Vector2<float>(1, 1))
         {
             if (message == "" || !font->state)
             {
@@ -213,7 +222,7 @@ namespace ENG
         }
         inline static int textureDrawCount = 0;
 
-        inline static void DrawLine(Camera *camera, Vector2<float> from, Vector2<float> to, ColorRGBA color = ColorRGBA(255, 255, 255, 255))
+        static void DrawLine(Camera *camera, Vector2<float> from, Vector2<float> to, ColorRGBA color = ColorRGBA(255, 255, 255, 255))
         {
             from = projectToCamera(camera, from);
             to = projectToCamera(camera, to);
@@ -221,7 +230,7 @@ namespace ENG
             SDL_RenderLine(camera->window->renderer, from.x, from.y, to.x, to.y);
         }
 
-        inline static void DrawTri(Camera *camera, Vector2<float> corner1, Vector2<float> corner2, Vector2<float> corner3, ColorRGBA color = ColorRGBA(255, 255, 255, 255))
+        static void DrawTri(Camera *camera, Vector2<float> corner1, Vector2<float> corner2, Vector2<float> corner3, ColorRGBA color = ColorRGBA(255, 255, 255, 255))
         {
             corner1 = projectToCamera(camera, corner1);
             corner2 = projectToCamera(camera, corner2);
@@ -249,6 +258,12 @@ namespace ENG
             vertices[2].color.a = color.alpha / 255.0f;
 
             SDL_RenderGeometry(camera->window->renderer, NULL, vertices, 3, NULL, 0);
+        }
+        static void DrawPixel(Camera *camera, Vector2<int> pos, ColorRGBA color = ColorRGBA(255,255,255,255))
+        {
+            Vector2<int> drawPos = projectToCamera(camera, pos);
+            SDL_SetRenderDrawColor(camera->window->renderer, color.red, color.green, color.blue, color.alpha);
+            SDL_RenderPoint(camera->window->renderer, drawPos.x, drawPos.y);
         }
     };
 

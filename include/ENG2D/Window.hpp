@@ -18,6 +18,7 @@ namespace ENG
         struct Renderer
         {
             SDL_Renderer *pointer;
+            Vector2<int> scale = {1, 1};
             operator SDL_Renderer *() const
             {
                 return pointer;
@@ -131,6 +132,20 @@ namespace ENG
                 flag_hasCustomCursor = true;
             }
         }
+        void SetCustomCursor()
+        {
+            SDL_HideCursor();
+        }
+        void SetScale(int scale = 1.0f)
+        {
+            renderer.scale = Vector2<int>(scale, scale);
+            SDL_SetRenderScale(renderer, scale, scale);
+        }
+        void SetScale(Vector2<int> scale)
+        {
+            renderer.scale = scale;
+            SDL_SetRenderScale(renderer, scale.x, scale.y);
+        }
         void Update()
         {
             if (flag_hasCustomCursor)
@@ -140,13 +155,13 @@ namespace ENG
                 SDL_FRect r;
                 r.w = cursorSize.x * cursorScale.x;
                 r.h = cursorSize.y * cursorScale.y;
-                r.x = x - (r.w / 2);
-                r.y = y - (r.h / 2);
+                r.x = (x - ((r.w / 2) * renderer.scale.x)) / renderer.scale.x;
+                r.y = (y - ((r.h / 2) * renderer.scale.x)) / renderer.scale.y;
                 SDL_RenderTexture(renderer, cursor, NULL, &r);
             }
             SDL_SetRenderTarget(renderer, NULL);
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-            SDL_SetRenderScale(renderer, 1, 1);
+            // SDL_SetRenderScale(renderer, 1, 1);
             SDL_GetWindowSizeInPixels(pointer, &size.x, &size.y);
             center = Vector2<int>(size.x / 2, size.y / 2);
             SDL_RenderPresent(renderer);

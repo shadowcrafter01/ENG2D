@@ -225,11 +225,12 @@ namespace ENG
 
             out /= camera->zoom;
 
+            out /= camera->window->renderer.scale;
+
             out.x += camera->position.x;
             out.y += camera->position.y;
 
-            // out.x = SDL_clamp(out.x, camera->window->size.x / -2, camera->window->size.x / 2);
-            // out.y = SDL_clamp(out.y, camera->window->size.y / -2, camera->window->size.y / 2);
+            
 
             return out;
         }

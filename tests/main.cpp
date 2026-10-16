@@ -13,6 +13,8 @@ ENG::Texture chud = ENG::Texture(&window, "assets/textures/chud.png");
 
 ENG::File file = ENG::File("test.json");
 
+ENG::Font font = ENG::Font("assets/fonts/Retro.Gaming.Extended.ttf", 32);
+
 ENG::Timer timer;
 
 std::vector<ENG::Dingus *> balls;
@@ -46,21 +48,22 @@ int main()
     ENG::Init();
 
     window.SetCustomCursor(cursor);
-    window.cursorScale = {2, 2};
+    //window.cursorScale = {2, 2};
+    window.SetScale(2.0f);
 
-    ENG::Dingus *ground = ENG::Dingus::Create(&camera, &chud, ENG::Transform2<float>(0, -500, 5000, chud.size.y));
-    ground->AssignCollisionShape(ENG::CollisionShape::Box(ground->GetTransform().size), 1, 0.25, 0.5)->SetStatic();
-    ENG::Dingus *wall1 = ENG::Dingus::Create(&camera, &chud, ENG::Transform2<float>(2500, 2000, chud.size.x, 5000));
-    wall1->AssignCollisionShape(ENG::CollisionShape::Box(wall1->GetTransform().size), 1, 0.25, 0.5)->SetStatic();
-    ENG::Dingus *wall2 = ENG::Dingus::Create(&camera, &chud, ENG::Transform2<float>(-2500, 2000, chud.size.x, 5000));
-    wall2->AssignCollisionShape(ENG::CollisionShape::Box(wall2->GetTransform().size), 1, 0.25, 0.5)->SetStatic();
+    // ENG::Dingus *ground = ENG::Dingus::Create(&camera, &chud, ENG::Transform2<float>(0, -500, 5000, chud.size.y));
+    // ground->AssignCollisionShape(ENG::CollisionShape::Box(ground->GetTransform().size), 1, 0.25, 0.5)->SetStatic();
+    // ENG::Dingus *wall1 = ENG::Dingus::Create(&camera, &chud, ENG::Transform2<float>(2500, 2000, chud.size.x, 5000));
+    // wall1->AssignCollisionShape(ENG::CollisionShape::Box(wall1->GetTransform().size), 1, 0.25, 0.5)->SetStatic();
+    // ENG::Dingus *wall2 = ENG::Dingus::Create(&camera, &chud, ENG::Transform2<float>(-2500, 2000, chud.size.x, 5000));
+    // wall2->AssignCollisionShape(ENG::CollisionShape::Box(wall2->GetTransform().size), 1, 0.25, 0.5)->SetStatic();
 
-    for (size_t i = 0; i < 50; ++i)
-    {
-        ENG::Dingus *ball = ENG::Dingus::Create(&camera, &chud, ENG::Transform2<float>(0, 128 * i, chud.size));
-        ball->AssignCollisionShape(ENG::CollisionShape::Box(chud.size), 1, 0.25, 0.5);
-        balls.push_back(ball);
-    }
+    // for (size_t i = 0; i < 50; ++i)
+    //{
+    //     ENG::Dingus *ball = ENG::Dingus::Create(&camera, &chud, ENG::Transform2<float>(0, 128 * i, chud.size));
+    //     ball->AssignCollisionShape(ENG::CollisionShape::Box(chud.size), 1, 0.25, 0.5);
+    //     balls.push_back(ball);
+    // }
 
     double value;
     file.readProperty("value", &value, 10.0);
@@ -106,9 +109,14 @@ int main()
 
         if (ENG::Input::GetMouseState(SDL_BUTTON_LEFT))
         {
-            nearest->ApplyForce((ENG::Input::GetMouseWorldPos(&camera) - nearest->GetPosition()).Scale(500, true));
+            // nearest->ApplyForce((ENG::Input::GetMouseWorldPos(&camera) - nearest->GetPosition()).Scale(500, true));
         }
         // window.cursorScale = ENG::Vector2<float>((cosf(ENG::timer.now_s() * 10.0f) * 0.5f) + 2.0f, (sinf(ENG::timer.now_s() * 10.0f) * 0.5f) + 2.0f);
+        ENG::DrawTools::DrawPixel(&camera, ENG::Input::GetMouseWorldPos(&camera));
+        ENG::DrawTools::DrawTexture(&camera, &chud, ENG::Input::GetMouseWorldPos(&camera));
+        ENG::DrawTools::DrawFont(&camera, &font, ENG::Input::GetMouseWorldPos(&camera), {0, 0}, 4);
+
+        
     }
 
     file.writeProperty("value", timer.fps);
