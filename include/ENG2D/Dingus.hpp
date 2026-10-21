@@ -357,6 +357,10 @@ namespace ENG
         }
         const char *GetName()
         {
+            if (this == nullptr)
+            {
+                return "null";
+            }
             return _name;
         }
         static Dingus *GetNearest(Vector2<float> position)
@@ -542,6 +546,10 @@ namespace ENG
         }
         Dingus *SetName(const char *name)
         {
+            if (this == nullptr)
+            {
+                return nullptr;
+            }
             _name = name;
             return this;
         }
