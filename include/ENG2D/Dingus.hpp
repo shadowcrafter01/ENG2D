@@ -80,6 +80,7 @@ namespace ENG
         Camera *_camera = nullptr;
         Texture *_texture = nullptr;
         float _renderLayer = 0;
+        const char *_name = "dingus";
 
         bool _active = true;
         bool _physicsActive = false;
@@ -354,6 +355,10 @@ namespace ENG
             }
             return _renderLayer;
         }
+        const char *GetName()
+        {
+            return _name;
+        }
         static Dingus *GetNearest(Vector2<float> position)
         {
             Dingus *nearestDingus = nullptr;
@@ -369,6 +374,49 @@ namespace ENG
                 }
             }
             return nearestDingus;
+        }
+        static Dingus *GetNearestByName(Vector2<float> position, const char *name)
+        {
+            Dingus *nearestDingus = nullptr;
+            float nearestDistance = std::numeric_limits<float>::max();
+
+            for (const auto &dngs : _instances)
+            {
+                float dist = Vector2<float>::Distance(position, dngs->GetPosition());
+                if ((dngs->GetName() == name) && (dist < nearestDistance))
+                {
+                    nearestDistance = dist;
+                    nearestDingus = dngs.get();
+                }
+            }
+            return nearestDingus;
+        }
+        static Dingus *GetByName(const char *name)
+        {
+            for (const auto &dngs : _instances)
+            {
+                if (dngs->GetName() == name)
+                {
+                    return dngs.get();
+                }
+            }
+            return nullptr;
+        }
+        static Dingus *GetByIndex(int index)
+        {
+            return _instances.at(index).get();
+        }
+        static std::vector<Dingus*> GetAllByName(const char *name)
+        {
+            std::vector<Dingus*> array = {};
+            for (const auto &dngs : _instances)
+            {
+                if (dngs->GetName() == name)
+                {
+                    array.push_back(dngs.get());
+                }
+            }
+            return array;
         }
         static const std::vector<std::unique_ptr<Dingus>> &GetAllInstances()
         {
@@ -492,6 +540,11 @@ namespace ENG
             _ResortInstances();
             return this;
         }
+        Dingus *SetName(const char *name)
+        {
+            _name = name;
+            return this;
+        }
         static void SetWorldGravity(Vector2<float> v)
         {
             b2World_SetGravity(_worldID, v);
@@ -572,7 +625,8 @@ namespace ENG
             return this;
         }
 
-        // virtual update function that you override (if you want) in any class that uses Dingus as a parent class
+        /// virtual update function that you override (if you want) in any class that uses Dingus as a parent class
+        /// is called when drawn to screen
         virtual void Update()
         {
         }
