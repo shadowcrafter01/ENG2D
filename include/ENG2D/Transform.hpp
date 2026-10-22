@@ -34,6 +34,15 @@ namespace ENG
         {
         }
 
+        bool ContainsPoint(Vector2<T> point)
+        {
+            T xMax = position.x + (size.x / (T)2.0);
+            T yMax = position.y + (size.y / (T)2.0);
+            T xMin = position.x - (size.x / (T)2.0);
+            T yMin = position.y - (size.y / (T)2.0);
+            return (point.x <= xMax && point.x >= xMin) && (point.y <= yMax && point.y >= yMin);
+        }
+
         Vector2<T> position;
         Vector2<T> size;
         T angle;

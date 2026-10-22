@@ -40,7 +40,34 @@ namespace ENG
             }
             if (_texture != NULL && _camera != nullptr)
             {
-                DrawTools::DrawTexture(_camera, _texture, _transform.position, _transform.size, _transform.angle);
+                DrawTools::DrawTexture(_camera, _texture, _transform.position, _transform.size, _transform.angle, _color);
+            }
+            if (_transform.ContainsPoint(Input::GetMouseWorldPos(_camera)))
+            {
+                MouseHover();
+                for (auto f : _hoverFunctions)
+                {
+                    f(this);
+                }
+
+                if (Input::Left)
+                {
+                    MouseDown();
+                    MouseDown(SDL_BUTTON_LEFT);
+                    for (auto f : _onClickFunctions_L)
+                    {
+                        f(this);
+                    }
+                }
+                if (Input::Right)
+                {
+                    MouseDown();
+                    MouseDown(SDL_BUTTON_RIGHT);
+                    for (auto f : _onClickFunctions_R)
+                    {
+                        f(this);
+                    }
+                }
             }
             Update();
         }
@@ -79,11 +106,17 @@ namespace ENG
         CollisionShape collisionShape;
         Camera *_camera = nullptr;
         Texture *_texture = nullptr;
+        ColorRGBA _color = RGBA_TEXTURE_UNCHANGED;
         float _renderLayer = 0;
         const char *_name = "dingus";
 
+        std::vector<std::function<void(Dingus *)>> _onClickFunctions_R = {};
+        std::vector<std::function<void(Dingus *)>> _onClickFunctions_L = {};
+        std::vector<std::function<void(Dingus *)>> _hoverFunctions = {};
+
         bool _active = true;
         bool _physicsActive = false;
+        bool _queueForDelete = false;
 
         // constructors
         Dingus(Camera *camera, Transform2<float> _transform) : _transform{_transform}
@@ -168,22 +201,24 @@ namespace ENG
             {
                 if (i->get() == dngs)
                 {
-                    _instances.erase(i);
+                    //_instances.erase(i);
+                    i->get()->_queueForDelete = true;
                     return;
                 }
             }
         }
         void Destroy()
         {
-            for (auto i = _instances.begin(); i != _instances.end(); ++i)
-            {
-                if (i->get() == this)
-                {
-                    _instances.erase(i);
-                    return;
-                }
-            }
-            _ResortInstances();
+            // for (auto i = _instances.begin(); i != _instances.end(); ++i)
+            //{
+            //     if (i->get() == this)
+            //     {
+            //         _instances.erase(i);
+            //         return;
+            //     }
+            // }
+            //_ResortInstances();
+            _queueForDelete = true;
         }
         static void DestroyAll()
         {
@@ -288,6 +323,33 @@ namespace ENG
                 return nullptr;
             }
             _camera = cam;
+            return this;
+        }
+        Dingus *AssignFunction_MouseClickR(std::function<void(Dingus *)> func)
+        {
+            if (this == nullptr)
+            {
+                return nullptr;
+            }
+            _onClickFunctions_R.push_back(func);
+            return this;
+        }
+        Dingus *AssignFunction_MouseClickL(std::function<void(Dingus *)> func)
+        {
+            if (this == nullptr)
+            {
+                return nullptr;
+            }
+            _onClickFunctions_L.push_back(func);
+            return this;
+        }
+        Dingus *AssignFunction_MouseHover(std::function<void(Dingus *)> func)
+        {
+            if (this == nullptr)
+            {
+                return nullptr;
+            }
+            _hoverFunctions.push_back(func);
             return this;
         }
 
@@ -410,9 +472,9 @@ namespace ENG
         {
             return _instances.at(index).get();
         }
-        static std::vector<Dingus*> GetAllByName(const char *name)
+        static std::vector<Dingus *> GetAllByName(const char *name)
         {
-            std::vector<Dingus*> array = {};
+            std::vector<Dingus *> array = {};
             for (const auto &dngs : _instances)
             {
                 if (dngs->GetName() == name)
@@ -553,6 +615,25 @@ namespace ENG
             _name = name;
             return this;
         }
+        Dingus *SetColorRGBA(ColorRGBA color)
+        {
+            if (this == nullptr)
+            {
+                return nullptr;
+            }
+            _color = color;
+            return this;
+        }
+        Dingus *SetColorRGBA(Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha)
+        {
+            if (this == nullptr)
+            {
+                return nullptr;
+            }
+            ColorRGBA color(red, green, blue, alpha);
+            _color = color;
+            return this;
+        }
         static void SetWorldGravity(Vector2<float> v)
         {
             b2World_SetGravity(_worldID, v);
@@ -638,16 +719,32 @@ namespace ENG
         virtual void Update()
         {
         }
+        virtual void MouseDown(Uint8 button)
+        {
+        }
+        virtual void MouseDown()
+        {
+        }
+        virtual void MouseHover()
+        {
+        }
 
         // update all function called by the engine, no touchie
         inline static void UpdateAll()
         {
             b2World_Step(_worldID, _worldTstep, _worldSubsteps);
-            for (auto i = _instances.begin(); i != _instances.end(); ++i)
+            for (auto i = _instances.rbegin(); i != _instances.rend(); ++i)
             {
-                if (i->get()->_active)
+                if (i->get()->_queueForDelete)
                 {
-                    i->get()->_Update();
+                    _instances.erase((i + 1).base());
+                }
+                else
+                {
+                    if (i->get()->_active)
+                    {
+                        i->get()->_Update();
+                    }
                 }
             }
         }

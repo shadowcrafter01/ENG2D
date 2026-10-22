@@ -19,6 +19,14 @@ ENG::Timer timer;
 
 //std::vector<ENG::Dingus *> balls;
 
+void WhenBallClicked(ENG::Dingus *me)
+{
+    if (me->GetName() == "ball")
+    {
+        me->Destroy();
+    }
+}
+
 ENG::Dingus *nearest = nullptr;
 void onMouseDownL()
 {
@@ -30,7 +38,7 @@ void onMouseDownL()
 
 void onMouseDownR()
 {
-    ENG::Dingus::GetNearestByName(ENG::Input::GetMouseWorldPos(&camera), "ball")->Destroy();
+    //ENG::Dingus::GetNearestByName(ENG::Input::GetMouseWorldPos(&camera), "ball")->Destroy();
     //if (balls.size() > 0)
     //{
     //    balls.at(0)->Destroy();
@@ -63,13 +71,14 @@ int main()
     ENG::Dingus *wall2 = ENG::Dingus::Create(&camera, &chud, ENG::Transform2<float>(-2500, 2000, chud.size.x, 5000));
     wall2->AssignCollisionShape(ENG::CollisionShape::Box(wall2->GetTransform().size), 1, 0.25, 0.5)->SetStatic();
 
-    //for (size_t i = 0; i < 50; ++i)
-    //{
-    //    ENG::Dingus *ball = ENG::Dingus::Create(&camera, &chud, ENG::Transform2<float>(0, 128 * i, chud.size));
-    //    ball->AssignCollisionShape(ENG::CollisionShape::Box(chud.size), 1, 0.25, 0.5);
-    //    ball->SetName("ball");
-    //    balls.push_back(ball);
-    //}
+    for (size_t i = 0; i < 50; ++i)
+    {
+        ENG::Dingus *ball = ENG::Dingus::Create(&camera, &chud, ENG::Transform2<float>(0, 128 * i, chud.size));
+        ball->AssignCollisionShape(ENG::CollisionShape::Box(chud.size), 1, 0.25, 0.5);
+        ball->SetName("ball");
+        ball->AssignFunction_MouseClickR(WhenBallClicked);
+        //balls.push_back(ball);
+    }
 
     double value;
     file.readProperty("value", &value, 10.0);
