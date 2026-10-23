@@ -17,7 +17,7 @@ ENG::Font font = ENG::Font("assets/fonts/Retro.Gaming.Extended.ttf", 32);
 
 ENG::Timer timer;
 
-//std::vector<ENG::Dingus *> balls;
+// std::vector<ENG::Dingus *> balls;
 
 void WhenBallClicked(ENG::Dingus *me)
 {
@@ -38,17 +38,17 @@ void onMouseDownL()
 
 void onMouseDownR()
 {
-    //ENG::Dingus::GetNearestByName(ENG::Input::GetMouseWorldPos(&camera), "ball")->Destroy();
-    //if (balls.size() > 0)
+    // ENG::Dingus::GetNearestByName(ENG::Input::GetMouseWorldPos(&camera), "ball")->Destroy();
+    // if (balls.size() > 0)
     //{
-    //    balls.at(0)->Destroy();
-    //    balls.erase(balls.begin());
-    //}
+    //     balls.at(0)->Destroy();
+    //     balls.erase(balls.begin());
+    // }
 
-    //for (auto ball : ENG::Dingus::GetAllByName("ball"))
+    // for (auto ball : ENG::Dingus::GetAllByName("ball"))
     //{
-    //    ball->Destroy();
-    //}
+    //     ball->Destroy();
+    // }
 }
 
 void onMouseUpL()
@@ -61,7 +61,7 @@ int main()
     ENG::Init();
 
     window.SetCustomCursor(cursor);
-    //window.cursorScale = {2, 2};
+    // window.cursorScale = {2, 2};
     window.SetScale(2.0f);
 
     ENG::Dingus *ground = ENG::Dingus::Create(&camera, &chud, ENG::Transform2<float>(0, -500, 5000, chud.size.y));
@@ -73,11 +73,11 @@ int main()
 
     for (size_t i = 0; i < 50; ++i)
     {
-        ENG::Dingus *ball = ENG::Dingus::Create(&camera, &chud, ENG::Transform2<float>(0, 128 * i, chud.size));
-        ball->AssignCollisionShape(ENG::CollisionShape::Box(chud.size), 1, 0.25, 0.5);
+        ENG::Dingus *ball = ENG::Dingus::Create(&camera, &chud, ENG::Transform2<float>(0, 1280 * i, chud.size * ENG::Vector2<int>(1, 10)));
+        ball->AssignCollisionShape(ENG::CollisionShape::Box(chud.size * ENG::Vector2<int>(1, 10)), 1, 0.25, 0.5);
         ball->SetName("ball");
         ball->AssignFunction_MouseClickR(WhenBallClicked);
-        //balls.push_back(ball);
+        // balls.push_back(ball);
     }
 
     double value;
@@ -127,11 +127,9 @@ int main()
             nearest->ApplyForce((ENG::Input::GetMouseWorldPos(&camera) - nearest->GetPosition()).Scale(500, true));
         }
         // window.cursorScale = ENG::Vector2<float>((cosf(ENG::timer.now_s() * 10.0f) * 0.5f) + 2.0f, (sinf(ENG::timer.now_s() * 10.0f) * 0.5f) + 2.0f);
-        //ENG::DrawTools::DrawPixel(&camera, ENG::Input::GetMouseWorldPos(&camera));
-        //ENG::DrawTools::DrawTexture(&camera, &chud, ENG::Input::GetMouseWorldPos(&camera));
-        //ENG::DrawTools::DrawFont(&camera, &font, ENG::Input::GetMouseWorldPos(&camera), {0, 0}, 4);
-
-        
+        // ENG::DrawTools::DrawPixel(&camera, ENG::Input::GetMouseWorldPos(&camera));
+        // ENG::DrawTools::DrawTexture(&camera, &chud, ENG::Input::GetMouseWorldPos(&camera));
+        // ENG::DrawTools::DrawFont(&camera, &font, ENG::Input::GetMouseWorldPos(&camera), {0, 0}, 4);
     }
 
     file.writeProperty("value", timer.fps);

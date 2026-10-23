@@ -9,12 +9,15 @@
 namespace ENG
 {
 
-    template <class T = double>
+    template <class T = float>
     class Vector2
     {
     private:
     public:
         Vector2(const T &X = 0, const T &Y = 0) : x{X}, y{Y}
+        {
+        }
+        Vector2(b2Vec2 vec) : x{vec.x}, y{vec.y}
         {
         }
 

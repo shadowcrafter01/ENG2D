@@ -7,7 +7,7 @@
 
 namespace ENG
 {
-    template <class T = double>
+    template <class T = float>
     class Transform2
     {
     private:
@@ -19,28 +19,27 @@ namespace ENG
         {
         }
         Transform2(Vector2<T> pos, Vector2<T> size, T angle = 0) : position{pos},
-                                                                        size{size},
-                                                                        angle{angle}
+                                                                   size{size},
+                                                                   angle{angle}
         {
         }
         Transform2(Vector2<T> pos, T w, T h, T angle = 0) : position{pos},
-                                                                 size{Vector2<T>(w, h)},
-                                                                 angle{angle}
+                                                            size{Vector2<T>(w, h)},
+                                                            angle{angle}
         {
         }
         Transform2(T x, T y, Vector2<T> size, T angle = 0) : position{Vector2<T>(x, y)},
-                                                                  size{size},
-                                                                  angle{angle}
+                                                             size{size},
+                                                             angle{angle}
         {
         }
 
         bool ContainsPoint(Vector2<T> point)
         {
-            T xMax = position.x + (size.x / (T)2.0);
-            T yMax = position.y + (size.y / (T)2.0);
-            T xMin = position.x - (size.x / (T)2.0);
-            T yMin = position.y - (size.y / (T)2.0);
-            return (point.x <= xMax && point.x >= xMin) && (point.y <= yMax && point.y >= yMin);
+            Vector2<T> dv = point - position;
+            dv.Rotate(angle);
+
+            return (dv.x <= (size.x / (T)2.0) && dv.x >= -(size.x / (T)2.0)) && (dv.y <= (size.y / (T)2.0) && dv.y >= -(size.y / (T)2.0));
         }
 
         Vector2<T> position;

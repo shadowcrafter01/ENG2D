@@ -370,19 +370,19 @@ namespace ENG
             }
             return _transform.position;
         }
-        b2BodyId *GetBodyID()
+        b2BodyId GetBodyID()
         {
             if (this == nullptr)
             {
-                return nullptr;
+                return b2_nullBodyId;
             }
             if (_physicsActive)
             {
-                return &_bodyID;
+                return _bodyID;
             }
             else
             {
-                return nullptr;
+                return b2_nullBodyId;
             }
         }
         Vector2<float> GetVelocity()
