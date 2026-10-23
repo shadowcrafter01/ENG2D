@@ -79,7 +79,8 @@ namespace ENG
             default:
                 break;
             }
-            Input::Update(Event);
+            Input::Keyboard::Update(Event);
+            Input::Mouse::Update(Event);
         }
     }
 

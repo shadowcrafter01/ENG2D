@@ -42,7 +42,7 @@ namespace ENG
             {
                 DrawTools::DrawTexture(_camera, _texture, _transform.position, _transform.size, _transform.angle, _color);
             }
-            if (_transform.ContainsPoint(Input::GetMouseWorldPos(_camera)))
+            if (_transform.ContainsPoint(Input::Mouse::GetMouseWorldPos(_camera)))
             {
                 MouseHover();
                 for (auto f : _hoverFunctions)
@@ -50,7 +50,7 @@ namespace ENG
                     f(this);
                 }
 
-                if (Input::Left)
+                if (Input::Mouse::Left)
                 {
                     MouseDown();
                     MouseDown(SDL_BUTTON_LEFT);
@@ -59,7 +59,7 @@ namespace ENG
                         f(this);
                     }
                 }
-                if (Input::Right)
+                if (Input::Mouse::Right)
                 {
                     MouseDown();
                     MouseDown(SDL_BUTTON_RIGHT);
@@ -441,7 +441,7 @@ namespace ENG
             }
             return nearestDingus;
         }
-        static Dingus *GetNearestByName(Vector2<float> position, const char *name)
+        static Dingus *GetNearest(Vector2<float> position, const char *name)
         {
             Dingus *nearestDingus = nullptr;
             float nearestDistance = std::numeric_limits<float>::max();
@@ -487,6 +487,37 @@ namespace ENG
         static const std::vector<std::unique_ptr<Dingus>> &GetAllInstances()
         {
             return _instances;
+        }
+        static std::vector<Dingus *> GetAllInRange(Vector2<float> position, float radius)
+        {
+            std::vector<Dingus *> dinguses = {};
+
+            for (const auto &dngs : _instances)
+            {
+                float dist = Vector2<float>::Distance(position, dngs->GetPosition());
+                if (dist <= radius)
+                {
+                    dinguses.push_back(dngs.get());
+                }
+            }
+            return dinguses;
+        }
+        static std::vector<Dingus *> GetAllInRange(Vector2<float> position, float radius, const char *name)
+        {
+            std::vector<Dingus *> dinguses = {};
+
+            for (const auto &dngs : _instances)
+            {
+                if (dngs.get()->GetName() == name)
+                {
+                    float dist = Vector2<float>::Distance(position, dngs->GetPosition());
+                    if (dist <= radius)
+                    {
+                        dinguses.push_back(dngs.get());
+                    }
+                }
+            }
+            return dinguses;
         }
         static const b2WorldId GetWorld()
         {

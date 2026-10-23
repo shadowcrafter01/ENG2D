@@ -10,16 +10,12 @@
 
 #include "ENG2D/Camera.hpp"
 
-namespace ENG
+namespace ENG::Input
 {
 
-    class Input
+    class Mouse
     {
     private:
-        inline static std::unordered_set<SDL_Scancode> _keys;
-        inline static std::unordered_set<SDL_Scancode> _keysPressed;
-        inline static std::unordered_set<SDL_Scancode> _keysReleased;
-
         // mouse state
         // inline static std::unordered_set<Uint8> _mouseButtons;
 
@@ -45,17 +41,6 @@ namespace ENG
         {
             switch (event.type)
             {
-            case SDL_EVENT_KEY_DOWN:
-                if (!event.key.repeat)
-                {
-                    _keys.insert(event.key.scancode);
-                    _keysPressed.insert(event.key.scancode);
-                }
-                break;
-            case SDL_EVENT_KEY_UP:
-                _keys.erase(event.key.scancode);
-                _keysReleased.insert(event.key.scancode);
-                break;
             case SDL_EVENT_MOUSE_MOTION:
                 int w;
                 int h;
@@ -176,20 +161,6 @@ namespace ENG
         inline static bool Right = false;
         inline static bool Middle = false;
 
-        // keyboard stuf
-        static bool keyDown(SDL_Scancode sc)
-        {
-            return _keysPressed.count(sc) != 0;
-        }
-        static bool keyUp(SDL_Scancode sc)
-        {
-            return _keysReleased.count(sc) != 0;
-        }
-        static bool keyState(SDL_Scancode sc)
-        {
-            return _keys.count(sc) != 0;
-        }
-
         static Vector2<float> GetMousePos(bool fenced = false)
         {
             if (fenced)
@@ -230,13 +201,54 @@ namespace ENG
             out.x += camera->position.x;
             out.y += camera->position.y;
 
-            
-
             return out;
         }
         static Vector2<float> GetMouseVel()
         {
             return Vector2<float>(_mouseU, _mouseV);
+        }
+    };
+
+    class Keyboard
+    {
+    private:
+        inline static std::unordered_set<SDL_Scancode> _keys;
+        inline static std::unordered_set<SDL_Scancode> _keysPressed;
+        inline static std::unordered_set<SDL_Scancode> _keysReleased;
+
+    public:
+        static void Update(const SDL_Event &event)
+        {
+            switch (event.type)
+            {
+            case SDL_EVENT_KEY_DOWN:
+                if (!event.key.repeat)
+                {
+                    _keys.insert(event.key.scancode);
+                    _keysPressed.insert(event.key.scancode);
+                }
+                break;
+            case SDL_EVENT_KEY_UP:
+                _keys.erase(event.key.scancode);
+                _keysReleased.insert(event.key.scancode);
+                break;
+            default:
+                break;
+            }
+        }
+
+        // keyboard stuf
+        static bool keyDown(SDL_Scancode sc)
+        {
+            return _keysPressed.count(sc) != 0;
+        }
+        static bool keyUp(SDL_Scancode sc)
+        {
+            return _keysReleased.count(sc) != 0;
+        }
+        static bool keyState(SDL_Scancode sc)
+        {
+            return _keys.count(sc) != 0;
         }
     };
 

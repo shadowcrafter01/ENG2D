@@ -32,7 +32,7 @@ void onMouseDownL()
 {
     nearest->SetRenderLayer(0);
     window.SetCustomCursor(cursor2);
-    nearest = ENG::Dingus::GetNearestByName(ENG::Input::GetMouseWorldPos(&camera), "ball");
+    nearest = ENG::Dingus::GetNearest(ENG::Input::Mouse::GetMouseWorldPos(&camera), "ball");
     nearest->SetRenderLayer(1);
 }
 
@@ -87,9 +87,9 @@ int main()
 
     camera.zoom = 0.1;
 
-    ENG::Input::RegisterMouseDown_L(onMouseDownL);
-    ENG::Input::RegisterMouseDown_R(onMouseDownR);
-    ENG::Input::RegisterMouseUp_L(onMouseUpL);
+    ENG::Input::Mouse::RegisterMouseDown_L(onMouseDownL);
+    ENG::Input::Mouse::RegisterMouseDown_R(onMouseDownR);
+    ENG::Input::Mouse::RegisterMouseUp_L(onMouseUpL);
 
     while (ENG::Update())
     {
@@ -97,34 +97,34 @@ int main()
 
         ENG::Dingus::SetWorldTimeStep(timer.delta * 10);
 
-        if (ENG::Input::keyState(SDL_SCANCODE_W))
+        if (ENG::Input::Keyboard::keyState(SDL_SCANCODE_W))
         {
             camera.position.y += 200.0 / camera.zoom * timer.delta;
         }
-        if (ENG::Input::keyState(SDL_SCANCODE_A))
+        if (ENG::Input::Keyboard::keyState(SDL_SCANCODE_A))
         {
             camera.position.x -= 200.0 / camera.zoom * timer.delta;
         }
-        if (ENG::Input::keyState(SDL_SCANCODE_S))
+        if (ENG::Input::Keyboard::keyState(SDL_SCANCODE_S))
         {
             camera.position.y -= 200.0 / camera.zoom * timer.delta;
         }
-        if (ENG::Input::keyState(SDL_SCANCODE_D))
+        if (ENG::Input::Keyboard::keyState(SDL_SCANCODE_D))
         {
             camera.position.x += 200.0 / camera.zoom * timer.delta;
         }
-        if (ENG::Input::keyState(SDL_SCANCODE_UP))
+        if (ENG::Input::Keyboard::keyState(SDL_SCANCODE_UP))
         {
             camera.zoom += 1.0 * camera.zoom * timer.delta;
         }
-        if (ENG::Input::keyState(SDL_SCANCODE_DOWN))
+        if (ENG::Input::Keyboard::keyState(SDL_SCANCODE_DOWN))
         {
             camera.zoom -= 1.0 * camera.zoom * timer.delta;
         }
 
-        if (ENG::Input::GetMouseState(SDL_BUTTON_LEFT))
+        if (ENG::Input::Mouse::GetMouseState(SDL_BUTTON_LEFT))
         {
-            nearest->ApplyForce((ENG::Input::GetMouseWorldPos(&camera) - nearest->GetPosition()).Scale(500, true));
+            nearest->ApplyForce((ENG::Input::Mouse::GetMouseWorldPos(&camera) - nearest->GetPosition()).Scale(500, true));
         }
         // window.cursorScale = ENG::Vector2<float>((cosf(ENG::timer.now_s() * 10.0f) * 0.5f) + 2.0f, (sinf(ENG::timer.now_s() * 10.0f) * 0.5f) + 2.0f);
         // ENG::DrawTools::DrawPixel(&camera, ENG::Input::GetMouseWorldPos(&camera));
