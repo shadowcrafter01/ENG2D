@@ -56,6 +56,17 @@ void onMouseUpL()
     window.SetCustomCursor(cursor);
 }
 
+void ZoomIn(bool keyState)
+{
+    if (keyState)
+        camera.zoom += 1.0 * camera.zoom * timer.delta;
+}
+void ZoomOut(bool keyState)
+{
+    if (keyState)
+        camera.zoom -= 1.0 * camera.zoom * timer.delta;
+}
+
 int main()
 {
     ENG::Init();
@@ -91,35 +102,36 @@ int main()
     ENG::Input::Mouse::RegisterMouseDown_R(onMouseDownR);
     ENG::Input::Mouse::RegisterMouseUp_L(onMouseUpL);
 
+    ENG::Action zoomIn(ZoomIn, SDL_SCANCODE_UP);
+    ENG::Action zoomOut(ZoomOut, SDL_SCANCODE_DOWN);
+
     while (ENG::Update())
     {
         timer.Update();
 
         ENG::Dingus::SetWorldTimeStep(timer.delta * 10);
 
-        if (ENG::Input::Keyboard::keyState(SDL_SCANCODE_W))
+        if (ENG::Input::Keyboard::KeyState(SDL_SCANCODE_W))
         {
             camera.position.y += 200.0 / camera.zoom * timer.delta;
         }
-        if (ENG::Input::Keyboard::keyState(SDL_SCANCODE_A))
+        if (ENG::Input::Keyboard::KeyState(SDL_SCANCODE_A))
         {
             camera.position.x -= 200.0 / camera.zoom * timer.delta;
         }
-        if (ENG::Input::Keyboard::keyState(SDL_SCANCODE_S))
+        if (ENG::Input::Keyboard::KeyState(SDL_SCANCODE_S))
         {
             camera.position.y -= 200.0 / camera.zoom * timer.delta;
         }
-        if (ENG::Input::Keyboard::keyState(SDL_SCANCODE_D))
+        if (ENG::Input::Keyboard::KeyState(SDL_SCANCODE_D))
         {
             camera.position.x += 200.0 / camera.zoom * timer.delta;
         }
-        if (ENG::Input::Keyboard::keyState(SDL_SCANCODE_UP))
+        if (ENG::Input::Keyboard::KeyState(SDL_SCANCODE_UP))
         {
-            camera.zoom += 1.0 * camera.zoom * timer.delta;
         }
-        if (ENG::Input::Keyboard::keyState(SDL_SCANCODE_DOWN))
+        if (ENG::Input::Keyboard::KeyState(SDL_SCANCODE_DOWN))
         {
-            camera.zoom -= 1.0 * camera.zoom * timer.delta;
         }
 
         if (ENG::Input::Mouse::GetMouseState(SDL_BUTTON_LEFT))

@@ -4,6 +4,7 @@
 #include <SDL3/SDL.h>
 #include <vector>
 #include <functional>
+#include "Input.hpp"
 
 namespace ENG
 {
@@ -12,70 +13,66 @@ namespace ENG
     private:
         static std::vector<Action *> _instances;
 
-        void _Update()
+        void _Update(std::unordered_set<SDL_Scancode> keys)
         {
-            for (auto f : _functions)
+            _state = false;
+            for (auto k : _keys)
             {
-                f();
+                if (!_state && keys.count(k) > 0)
+                {
+                    _state = true;
+                }
+                for (auto f : _functions)
+                {
+                    f(_state);
+                }
             }
         }
 
-        std::vector<std::function<void()>> _functions;
+        std::vector<std::function<void(bool)>> _functions;
+
         std::vector<SDL_Scancode> _keys;
 
-        const char *_name;
+        bool _state = false;
 
     public:
-        Action(const char *name)
+        Action()
         {
-            _name = name;
             _instances.push_back(this);
         }
-        Action(const char *name, std::function<void()> f)
+        Action(std::function<void(bool)> f)
         {
-            _name = name;
             _functions.push_back(f);
             _instances.push_back(this);
         }
-        Action(const char *name, SDL_Scancode key, std::function<void()> f)
+        Action(std::function<void(bool)> f, SDL_Scancode key)
         {
-            _name = name;
             _keys.push_back(key);
             _functions.push_back(f);
             _instances.push_back(this);
         }
 
-        void AssignFunction(std::function<void()> f)
+        void AssignFunction(std::function<void(bool)> f)
         {
             _functions.push_back(f);
         }
-
         void AssignKey(SDL_Scancode sc)
         {
             _keys.push_back(sc);
         }
 
-        static void UpdateAll(const SDL_Event &event)
+        bool GetState()
         {
+            return _state;
+        }
 
-            switch (event.type)
-            {
-            case SDL_EVENT_KEY_DOWN:
-                if (!event.key.repeat)
-                {
-                    
-                }
-                break;
-            case SDL_EVENT_KEY_UP:
-
-                break;
-            default:
-                break;
-            }
+        static void UpdateAll()
+        {
+            std::unordered_set<SDL_Scancode> keys = Input::Keyboard::GetKeySet();
 
             for (auto a : _instances)
             {
-                a->_Update();
+                a->_Update(keys);
             }
         }
     };

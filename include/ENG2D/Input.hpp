@@ -213,8 +213,6 @@ namespace ENG::Input
     {
     private:
         inline static std::unordered_set<SDL_Scancode> _keys;
-        inline static std::unordered_set<SDL_Scancode> _keysPressed;
-        inline static std::unordered_set<SDL_Scancode> _keysReleased;
 
     public:
         static void Update(const SDL_Event &event)
@@ -225,12 +223,10 @@ namespace ENG::Input
                 if (!event.key.repeat)
                 {
                     _keys.insert(event.key.scancode);
-                    _keysPressed.insert(event.key.scancode);
                 }
                 break;
             case SDL_EVENT_KEY_UP:
                 _keys.erase(event.key.scancode);
-                _keysReleased.insert(event.key.scancode);
                 break;
             default:
                 break;
@@ -238,17 +234,13 @@ namespace ENG::Input
         }
 
         // keyboard stuf
-        static bool keyDown(SDL_Scancode sc)
-        {
-            return _keysPressed.count(sc) != 0;
-        }
-        static bool keyUp(SDL_Scancode sc)
-        {
-            return _keysReleased.count(sc) != 0;
-        }
-        static bool keyState(SDL_Scancode sc)
+        static bool KeyState(SDL_Scancode sc)
         {
             return _keys.count(sc) != 0;
+        }
+        static std::unordered_set<SDL_Scancode> GetKeySet()
+        {
+            return _keys;
         }
     };
 

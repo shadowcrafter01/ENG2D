@@ -28,6 +28,7 @@
 #include "ENG2D/Dingus.hpp"
 #include "ENG2D/Math.hpp"
 #include "ENG2D/Transform.hpp"
+#include "ENG2D/Action.hpp"
 
 namespace ENG
 {
