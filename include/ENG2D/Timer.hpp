@@ -51,24 +51,24 @@ namespace ENG
         Timer &operator=(const Timer &) = delete;
 
         // Returns the latest captured nanosecond count since epoch of steady_clock
-        double Now_ns() const noexcept
+        double GetNanoSecond() const noexcept
         {
             return _currentNs.load(std::memory_order_acquire);
         }
 
-        double Now_ms() const noexcept
+        double GetMilliSecond() const noexcept
         {
             return _currentNs.load(std::memory_order_acquire) / 1000000.0f;
         }
 
-        double Now_s() const noexcept
+        double GetSecond() const noexcept
         {
             return _currentNs.load(std::memory_order_acquire) / 1000000000.0f;
         }
 
         void Update()
         {
-            double now = Now_ns();
+            double now = GetNanoSecond();
             delta = (now - _timeLast) / 1000000000.0f;
             _timeLast = now;
             if (delta == 0)

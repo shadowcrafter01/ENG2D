@@ -9,7 +9,7 @@
 #include "ENG2D/Atlas.hpp"
 #include "ENG2D/AnimatedTexture.hpp"
 #include "ENG2D/Font.hpp"
-
+#include <cmath>
 #include "ENG2D/Vector.hpp"
 #include "ENG2D/ColorRGBA.hpp"
 
@@ -45,9 +45,11 @@ namespace ENG
 
             return out;
         }
-        static bool onscreen(Camera *camera, Vector2<float> *vector, float size)
+        static bool onscreen(Camera *camera, SDL_FRect *rect)
         {
-            if (vector->x + 2 * size < 0 || vector->y + 2 * size < 0 || vector->x - size > camera->window->size.x || vector->y - size > camera->window->size.y)
+            float size = std::max(rect->w, rect->h);
+
+            if (rect->x + size < 0 || rect->y + size < 0 || rect->x - size > camera->window->size.x / 2.0 || rect->y - size > camera->window->size.y / 2.0)
             {
                 return false;
             }
@@ -64,9 +66,8 @@ namespace ENG
             r.h = size * camera->zoom * texture->size.y * scale.y;
             r.x = pos.x - (r.w / 2);
             r.y = pos.y - (r.h / 2);
-            Vector2<float> vr(r.x, r.y);
 
-            if (onscreen(camera, &vr, sqrt((r.w / 2 * r.w / 2) + (r.h / 2 * r.h / 2))))
+            if (onscreen(camera, &r))
             {
                 // texture->pointer = SDL_CreateTextureFromSurface(camera->window->renderer, texture->surface);
                 SDL_SetTextureBlendMode(texture->pointer, SDL_BLENDMODE_BLEND);
@@ -86,9 +87,8 @@ namespace ENG
             r.h = size.y * camera->zoom; // * texture->size.y;
             r.x = pos.x - (r.w / 2);
             r.y = pos.y - (r.h / 2);
-            Vector2<float> vr(r.x, r.y);
 
-            if (onscreen(camera, &vr, sqrt((r.w / 2 * r.w / 2) + (r.h / 2 * r.h / 2))))
+            if (onscreen(camera, &r))
             {
                 // texture->pointer = SDL_CreateTextureFromSurface(camera->window->renderer, texture->surface);
                 SDL_SetTextureBlendMode(texture->pointer, SDL_BLENDMODE_BLEND);
@@ -123,7 +123,6 @@ namespace ENG
             r.h = size * texture->size.y * scale.y;
             r.x = position.x - (r.w / 2);
             r.y = position.y - (r.h / 2);
-            Vector2<float> vr(r.x, r.y);
 
             SDL_SetTextureBlendMode(texture->pointer, SDL_BLENDMODE_BLEND);
             SDL_SetTextureColorMod(texture->pointer, color.red, color.green, color.blue);
@@ -143,7 +142,7 @@ namespace ENG
             r.y = pos.y - (r.h / 2);
             Vector2<float> vr(r.x, r.y);
 
-            if (onscreen(camera, &vr, sqrt((r.w / 2 * r.w / 2) + (r.h / 2 * r.h / 2))))
+            if (onscreen(camera, &r))
             {
                 SDL_FRect s;
                 s.h = atlas->rect.h;
@@ -175,9 +174,8 @@ namespace ENG
             r.h = size * camera->zoom * animatedTexture->frameSize.y;
             r.x = pos.x - (r.w / 2);
             r.y = pos.y - (r.h / 2);
-            Vector2<float> vr(r.x, r.y);
 
-            if (onscreen(camera, &vr, sqrt((r.w / 2 * r.w / 2) + (r.h / 2 * r.h / 2))))
+            if (onscreen(camera, &r))
             {
                 SDL_FRect s;
                 s.w = animatedTexture->frameSize.x;
@@ -208,9 +206,8 @@ namespace ENG
             r.w = size * scale.y * camera->zoom * textSurface->w;
             r.x = pos.x;
             r.y = pos.y;
-            Vector2<float> vr(r.x, r.y);
 
-            if (onscreen(camera, &vr, sqrt((r.w / 2 * r.w / 2) + (r.h / 2 * r.h / 2))))
+            if (onscreen(camera, &r))
             {
                 if (!SDL_RenderTextureRotated(camera->window->renderer, texture, NULL, &r, angle + camera->angle, NULL, SDL_FLIP_NONE))
                 {

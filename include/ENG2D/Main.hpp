@@ -66,10 +66,10 @@ namespace ENG
 
     void Event()
     {
-        SDL_Event Event;
-        while (SDL_PollEvent(&Event))
+        SDL_Event e;
+        while (SDL_PollEvent(&e))
         {
-            switch (Event.type)
+            switch (e.type)
             {
             case SDL_EVENT_QUIT:
                 GAMESTATE = false;
@@ -80,8 +80,8 @@ namespace ENG
             default:
                 break;
             }
-            Input::Keyboard::Update(Event);
-            Input::Mouse::Update(Event);
+            Input::Keyboard::Update(e);
+            Input::Mouse::Update(e);
         }
     }
 
@@ -90,8 +90,8 @@ namespace ENG
         Event();
         Action::UpdateAll();
         Window::UpdateAll();
-        Dingus::UpdateAll();
         DrawTools::textureDrawCount = 0;
+        Dingus::UpdateAll();
         return GAMESTATE;
     }
 

@@ -128,28 +128,28 @@ namespace ENG::Input
             }
         }
 
-        // register functions to mouse inputs
-        inline static void RegisterMouseDown_R(std::function<void()> function)
+        // Assign functions to mouse inputs
+        inline static void AssignMouseDown_R(std::function<void()> function)
         {
             _mouseDownFunctionsR.push_back(function);
         }
-        inline static void RegisterMouseDown_L(std::function<void()> function)
+        inline static void AssignMouseDown_L(std::function<void()> function)
         {
             _mouseDownFunctionsL.push_back(function);
         }
-        inline static void RegisterMouseDown_M(std::function<void()> function)
+        inline static void AssignMouseDown_M(std::function<void()> function)
         {
             _mouseDownFunctionsM.push_back(function);
         }
-        inline static void RegisterMouseUp_R(std::function<void()> function)
+        inline static void AssignMouseUp_R(std::function<void()> function)
         {
             _mouseUpFunctionsR.push_back(function);
         }
-        inline static void RegisterMouseUp_L(std::function<void()> function)
+        inline static void AssignMouseUp_L(std::function<void()> function)
         {
             _mouseUpFunctionsL.push_back(function);
         }
-        inline static void RegisterMouseUp_M(std::function<void()> function)
+        inline static void AssignMouseUp_M(std::function<void()> function)
         {
             _mouseUpFunctionsM.push_back(function);
         }

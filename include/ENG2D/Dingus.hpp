@@ -27,7 +27,7 @@ namespace ENG
     class Dingus
     {
     private:
-        inline static std::vector<std::unique_ptr<Dingus>> _instances;
+        inline static std::vector<std::unique_ptr<Dingus>> _instances;        
 
         void _Update()
         {
