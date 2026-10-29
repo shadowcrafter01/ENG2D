@@ -15,8 +15,9 @@ namespace ENG
         std::vector<std::function<void()>> functions;
 
     public:
-        RunOnce()
+        RunOnce(std::function<void()> f)
         {
+            AssignFunction(f);
         }
 
         void AssignFunction(std::function<void()> f)

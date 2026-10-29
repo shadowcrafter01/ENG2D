@@ -88,6 +88,7 @@ namespace ENG
     bool Update()
     {
         Event();
+        Action::UpdateAll();
         Window::UpdateAll();
         Dingus::UpdateAll();
         DrawTools::textureDrawCount = 0;

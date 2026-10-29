@@ -28,34 +28,53 @@ void WhenBallClicked(ENG::Dingus *me)
 }
 
 ENG::Dingus *nearest = nullptr;
-void onMouseDownL()
+
+
+void ResetCursor()
+{
+    window.SetCustomCursor(cursor);
+}
+ENG::RunOnce resetCursor(ResetCursor);
+void LayerAndCalcNearest()
 {
     nearest->SetRenderLayer(0);
     window.SetCustomCursor(cursor2);
     nearest = ENG::Dingus::GetNearest(ENG::Input::Mouse::GetMouseWorldPos(&camera), "ball");
     nearest->SetRenderLayer(1);
 }
-
-void onMouseDownR()
+ENG::RunOnce layerAndCalcNearest(LayerAndCalcNearest);
+void MouseLeft(bool buttonState)
 {
-    // ENG::Dingus::GetNearestByName(ENG::Input::GetMouseWorldPos(&camera), "ball")->Destroy();
-    // if (balls.size() > 0)
-    //{
-    //     balls.at(0)->Destroy();
-    //     balls.erase(balls.begin());
-    // }
-
-    // for (auto ball : ENG::Dingus::GetAllByName("ball"))
-    //{
-    //     ball->Destroy();
-    // }
+    resetCursor.OnFalse(buttonState);
+    layerAndCalcNearest.OnTrue(buttonState);
 }
 
-void onMouseUpL()
+
+void MouseRight(bool buttonState)
 {
-    window.SetCustomCursor(cursor);
+    
 }
 
+void MoveUp(bool keyState)
+{
+    if (keyState)
+        camera.position.y += 200.0 / camera.zoom * timer.delta;
+}
+void MoveDown(bool keyState)
+{
+    if (keyState)
+        camera.position.y -= 200.0 / camera.zoom * timer.delta;
+}
+void MoveLeft(bool keyState)
+{
+    if (keyState)
+        camera.position.x -= 200.0 / camera.zoom * timer.delta;
+}
+void MoveRight(bool keyState)
+{
+    if (keyState)
+        camera.position.x += 200.0 / camera.zoom * timer.delta;
+}
 void ZoomIn(bool keyState)
 {
     if (keyState)
@@ -66,6 +85,16 @@ void ZoomOut(bool keyState)
     if (keyState)
         camera.zoom -= 1.0 * camera.zoom * timer.delta;
 }
+
+ENG::Action zoomIn = ENG::Action(ZoomIn, SDL_SCANCODE_UP);
+ENG::Action zoomOut = ENG::Action(ZoomOut, SDL_SCANCODE_DOWN);
+ENG::Action moveRight = ENG::Action(MoveRight, SDL_SCANCODE_D);
+ENG::Action moveLeft = ENG::Action(MoveLeft, SDL_SCANCODE_A);
+ENG::Action moveUp = ENG::Action(MoveUp, SDL_SCANCODE_W);
+ENG::Action moveDown = ENG::Action(MoveDown, SDL_SCANCODE_S);
+
+ENG::Action mouseLeft = ENG::Action(MouseLeft, SDL_BUTTON_LEFT);
+ENG::Action mouseRight = ENG::Action(MouseRight, SDL_BUTTON_RIGHT);
 
 int main()
 {
@@ -84,8 +113,8 @@ int main()
 
     for (size_t i = 0; i < 50; ++i)
     {
-        ENG::Dingus *ball = ENG::Dingus::Create(&camera, &chud, ENG::Transform2<float>(0, 1280 * i, chud.size * ENG::Vector2<int>(1, 10)));
-        ball->AssignCollisionShape(ENG::CollisionShape::Box(chud.size * ENG::Vector2<int>(1, 10)), 1, 0.25, 0.5);
+        ENG::Dingus *ball = ENG::Dingus::Create(&camera, &chud, ENG::Transform2<float>(0, 1280 * i, chud.size * ENG::Vector2<int>(1, 1)));
+        ball->AssignCollisionShape(ENG::CollisionShape::Box(chud.size * ENG::Vector2<int>(1, 1)), 1, 0.25, 0.5);
         ball->SetName("ball");
         ball->AssignFunction_MouseClickR(WhenBallClicked);
         // balls.push_back(ball);
@@ -98,12 +127,9 @@ int main()
 
     camera.zoom = 0.1;
 
-    ENG::Input::Mouse::RegisterMouseDown_L(onMouseDownL);
-    ENG::Input::Mouse::RegisterMouseDown_R(onMouseDownR);
-    ENG::Input::Mouse::RegisterMouseUp_L(onMouseUpL);
-
-    ENG::Action zoomIn(ZoomIn, SDL_SCANCODE_UP);
-    ENG::Action zoomOut(ZoomOut, SDL_SCANCODE_DOWN);
+    //ENG::Input::Mouse::RegisterMouseDown_L(onMouseDownL);
+    //ENG::Input::Mouse::RegisterMouseDown_R(onMouseDownR);
+    //ENG::Input::Mouse::RegisterMouseUp_L(onMouseUpL);
 
     while (ENG::Update())
     {
@@ -111,30 +137,7 @@ int main()
 
         ENG::Dingus::SetWorldTimeStep(timer.delta * 10);
 
-        if (ENG::Input::Keyboard::KeyState(SDL_SCANCODE_W))
-        {
-            camera.position.y += 200.0 / camera.zoom * timer.delta;
-        }
-        if (ENG::Input::Keyboard::KeyState(SDL_SCANCODE_A))
-        {
-            camera.position.x -= 200.0 / camera.zoom * timer.delta;
-        }
-        if (ENG::Input::Keyboard::KeyState(SDL_SCANCODE_S))
-        {
-            camera.position.y -= 200.0 / camera.zoom * timer.delta;
-        }
-        if (ENG::Input::Keyboard::KeyState(SDL_SCANCODE_D))
-        {
-            camera.position.x += 200.0 / camera.zoom * timer.delta;
-        }
-        if (ENG::Input::Keyboard::KeyState(SDL_SCANCODE_UP))
-        {
-        }
-        if (ENG::Input::Keyboard::KeyState(SDL_SCANCODE_DOWN))
-        {
-        }
-
-        if (ENG::Input::Mouse::GetMouseState(SDL_BUTTON_LEFT))
+        if (ENG::Input::Mouse::Left)
         {
             nearest->ApplyForce((ENG::Input::Mouse::GetMouseWorldPos(&camera) - nearest->GetPosition()).Scale(500, true));
         }

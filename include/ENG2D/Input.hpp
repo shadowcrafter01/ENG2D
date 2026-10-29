@@ -36,6 +36,8 @@ namespace ENG::Input
         inline static std::vector<std::function<void()>> _mouseUpFunctionsM; // middle click
         inline static std::vector<std::function<void()>> _mouseUpFunctionsL; // left click
 
+        inline static std::unordered_set<Uint8> _buttons;
+
     public:
         static void Update(const SDL_Event &event)
         {
@@ -53,7 +55,7 @@ namespace ENG::Input
                 _mouseV += event.motion.yrel;
                 break;
             case SDL_EVENT_MOUSE_BUTTON_DOWN:
-                //_mouseButtons.insert(event.button.button);
+                _buttons.insert(event.button.button);
 
                 switch (event.button.button)
                 {
@@ -85,7 +87,7 @@ namespace ENG::Input
 
                 break;
             case SDL_EVENT_MOUSE_BUTTON_UP:
-                //_mouseButtons.erase(event.button.button);
+                _buttons.erase(event.button.button);
 
                 switch (event.button.button)
                 {
@@ -206,6 +208,10 @@ namespace ENG::Input
         static Vector2<float> GetMouseVel()
         {
             return Vector2<float>(_mouseU, _mouseV);
+        }
+        static std::unordered_set<Uint8> GetButtonSet()
+        {
+            return _buttons;
         }
     };
 
