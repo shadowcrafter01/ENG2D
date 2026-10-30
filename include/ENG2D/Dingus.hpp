@@ -138,7 +138,7 @@ namespace ENG
         {
             if (size = Vector2<float>(0, 0))
             {
-                _transform.size = texture->size;
+                _transform.size = texture->GetSize();
             }
             else
             {

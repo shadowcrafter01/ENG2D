@@ -11,6 +11,10 @@ ENG::Texture cursor = ENG::Texture(&window, "assets/textures/cursor.png");
 ENG::Texture cursor2 = ENG::Texture(&window, "assets/textures/cursorpressed.png");
 ENG::Texture chud = ENG::Texture(&window, "assets/textures/chud.png");
 
+//ENG::Atlas fireAtlas = ENG::Atlas::Create(&window, "assets/textures/fire.png");
+
+//ENG::AnimatedTexture fire = ENG::AnimatedTexture(&fireAtlas, 8, 1);
+
 ENG::File file = ENG::File("test.json");
 
 ENG::Font font = ENG::Font("assets/fonts/Retro.Gaming.Extended.ttf", 32);
@@ -100,19 +104,19 @@ int main()
     ENG::Init();
 
     window.SetCustomCursor(cursor);
-    window.SetScale(2.0f);
+    window.SetCursorScale(2.0f);
 
-    ENG::Dingus *ground = ENG::Dingus::Create(&camera, &chud, ENG::Transform2<float>(0, -500, 5000, chud.size.y));
+    ENG::Dingus *ground = ENG::Dingus::Create(&camera, &chud, ENG::Transform2<float>(0, -500, 5000, chud.GetSize().y));
     ground->AssignCollisionShape(ENG::CollisionShape::Box(ground->GetTransform().size), 1, 0.25, 0.5)->SetStatic();
     //ENG::Dingus *wall1 = ENG::Dingus::Create(&camera, &chud, ENG::Transform2<float>(2500, 2000, chud.size.x, 5000));
     //wall1->AssignCollisionShape(ENG::CollisionShape::Box(wall1->GetTransform().size), 1, 0.25, 0.5)->SetStatic();
     //ENG::Dingus *wall2 = ENG::Dingus::Create(&camera, &chud, ENG::Transform2<float>(-2500, 2000, chud.size.x, 5000));
     //wall2->AssignCollisionShape(ENG::CollisionShape::Box(wall2->GetTransform().size), 1, 0.25, 0.5)->SetStatic();
 
-    for (size_t i = 0; i < 1; ++i)
+    for (size_t i = 0; i < 100; ++i)
     {
-        ENG::Dingus *ball = ENG::Dingus::Create(&camera, &chud, ENG::Transform2<float>(0, 1280 * i, chud.size * ENG::Vector2<int>(1, 1)));
-        ball->AssignCollisionShape(ENG::CollisionShape::Box(chud.size * ENG::Vector2<int>(1, 1)), 1, 0.25, 0.5);
+        ENG::Dingus *ball = ENG::Dingus::Create(&camera, &chud, ENG::Transform2<float>(0, 1280 * i, chud.GetSize() * ENG::Vector2<int>(1, 1)));
+        ball->AssignCollisionShape(ENG::CollisionShape::Box(chud.GetSize() * ENG::Vector2<int>(1, 1)), 1, 0.25, 0.5);
         ball->SetName("ball");
         ball->AssignFunction_MouseClickR(WhenBallClicked);
     }
@@ -134,7 +138,7 @@ int main()
         {
             nearest->ApplyForce((ENG::Input::Mouse::GetMouseWorldPos(&camera) - nearest->GetPosition()).Scale(500, true));
         }
-        window.cursorScale = ENG::Vector2<float>((cosf(timer.GetSecond() * 10.0f) * 0.5f) + 1.0f, (sinf(timer.GetSecond() * 10.0f) * 0.5f) + 1.0f);
+        window.SetCursorScale(ENG::Vector2<float>((cosf(timer.GetSecond() * 10.0f) * 0.5f) + 1.0f, (sinf(timer.GetSecond() * 10.0f) * 0.5f) + 1.0f));
     }
 
     file.writeProperty("value", timer.fps);

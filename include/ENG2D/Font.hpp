@@ -42,7 +42,7 @@ namespace ENG
         }
         TTF_Text *MakeText(std::string text, Window *window)
         {
-            TTF_Text *textOut = TTF_CreateText(window->ttfEngine, font, text.c_str(), 0);
+            TTF_Text *textOut = TTF_CreateText(window->GetTextEngine(), font, text.c_str(), 0);
             TTF_SetTextColor(textOut, 255, 255, 255, SDL_ALPHA_OPAQUE);
             return textOut;
         }

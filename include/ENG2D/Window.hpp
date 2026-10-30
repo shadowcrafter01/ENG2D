@@ -17,11 +17,11 @@ namespace ENG
     private:
         struct Renderer
         {
-            SDL_Renderer *pointer;
+            SDL_Renderer *_pointer;
             Vector2<int> scale = {1, 1};
             operator SDL_Renderer *() const
             {
-                return pointer;
+                return _pointer;
             }
         };
 
@@ -31,121 +31,218 @@ namespace ENG
             return v;
         }
 
+        SDL_Window *_pointer;
+        Renderer _renderer;
+        TTF_TextEngine *_ttfEngine;
+        SDL_Texture *_cursor;
+        Vector2<int> _cursorSize = Vector2<int>(0, 0);
+        Vector2<float> _cursorScale = Vector2<int>(1, 1);
+        bool flag_hasCustomCursor = false;
+        const char *_title;
+        Vector2<int> _size;
+        Vector2<int> _center;
+        SDL_WindowFlags _flags;
+
     public:
-        Window(const char *title, Vector2<int> size, SDL_WindowFlags flags) : title{title},
-                                                                              size{size},
-                                                                              flags{flags}
+        Window(const char *title, Vector2<int> size, SDL_WindowFlags flags) : _title{title},
+                                                                              _size{size},
+                                                                              _flags{flags}
         {
-            Console::LogLoadStart((std::string) "Creating window [" + title + "]");
-            if (!SDL_CreateWindowAndRenderer(title, size.x, size.y, flags, &pointer, &renderer.pointer))
+            Console::LogLoadStart((std::string) "Creating window [" + _title + "]");
+            if (!SDL_CreateWindowAndRenderer(_title, size.x, size.y, flags, &_pointer, &_renderer._pointer))
             {
                 Console::LogLoadEnd(false);
                 return;
             }
-            if (!SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0))
+            if (!SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 0))
             {
                 Console::LogLoadEnd(false);
                 return;
             }
-            ttfEngine = TTF_CreateRendererTextEngine(renderer);
-            if (ttfEngine == NULL)
+            _ttfEngine = TTF_CreateRendererTextEngine(_renderer);
+            if (_ttfEngine == NULL)
             {
                 Console::LogLoadEnd(false);
             }
-            SDL_SetDefaultTextureScaleMode(renderer, SDL_SCALEMODE_PIXELART);
+            SDL_SetDefaultTextureScaleMode(_renderer, SDL_SCALEMODE_PIXELART);
             instances().push_back(this);
             Console::LogLoadEnd(true);
         }
         //    ~Window()
         //    {
         //        //std::vector<Window*> &v = instances();
-        //        if (renderer.pointer) SDL_DestroyRenderer(renderer);
-        //        if (pointer) SDL_DestroyWindow(pointer);
+        //        if (renderer._pointer) SDL_DestroyRenderer(renderer);
+        //        if (_pointer) SDL_DestroyWindow(_pointer);
         //    }
 
         // Window(const Window&) = delete;
         // Window& operator=(const Window&) = delete;
 
-        SDL_Window *pointer;
-        Renderer renderer;
-        TTF_TextEngine *ttfEngine;
-        SDL_Texture *cursor;
-        Vector2<int> cursorSize = Vector2<int>(0, 0);
-        Vector2<float> cursorScale = Vector2<int>(1, 1);
-        bool flag_hasCustomCursor = false;
-        const char *title;
-        Vector2<int> size;
-        Vector2<int> center;
-        SDL_WindowFlags flags;
-
-        void SetIcon(const char *path)
+        SDL_Window *GetPointer()
         {
+            return _pointer;
+        }
+        Renderer GetRenderer()
+        {
+            return _renderer;
+        }
+        TTF_TextEngine *GetTextEngine()
+        {
+            return _ttfEngine;
+        }
+        Vector2<int> GetSize()
+        {
+            return _size;
+        }
+        Vector2<int> GetCenter()
+        {
+            return _center;
+        }
+        SDL_WindowFlags GetFlags()
+        {
+            return _flags;
+        }
+
+        Window *SetIcon(const char *path)
+        {
+            if (this == nullptr)
+            {
+                return nullptr;
+            }
+
             SDL_Surface *surface = IMG_Load(path);
             if (surface == NULL)
             {
-                Console::LogError((std::string) "Error loading texture file [" + path + "] for window [" + title + "] icon");
-                return;
+                Console::LogError((std::string) "Error loading texture file [" + path + "] for window [" + _title + "] icon");
+                return nullptr;
             }
             int width = surface->w;
             int height = surface->h;
-            if (!SDL_SetWindowIcon(pointer, surface))
+            if (!SDL_SetWindowIcon(_pointer, surface))
             {
-                Console::LogError((std::string) "Error applying texture file [" + path + "] to window [" + title + "] icon");
+                Console::LogError((std::string) "Error applying texture file [" + path + "] to window [" + _title + "] icon");
             }
+
+            return this;
         }
-        void SetCustomCursor(const char *path)
+        Window *SetCustomCursor(const char *path)
         {
+            if (this == nullptr)
+            {
+                return nullptr;
+            }
+
             SDL_Surface *surface = IMG_Load(path);
-            cursor = SDL_CreateTextureFromSurface(renderer, surface);
-            if (cursor == NULL)
+            _cursor = SDL_CreateTextureFromSurface(_renderer, surface);
+            if (_cursor == NULL)
             {
-                return;
+                return nullptr;
             }
-            cursorSize = {surface->w, surface->h};
+            _cursorSize = {surface->w, surface->h};
             if (!flag_hasCustomCursor)
             {
                 SDL_HideCursor();
                 flag_hasCustomCursor = true;
             }
+
+            return this;
         }
-        void SetCustomCursor(SDL_Texture *texture, Vector2<int> size)
+        Window *SetCustomCursor(SDL_Texture *texture, Vector2<int> size)
         {
-            cursor = texture;
-            cursorSize = size;
+            if (this == nullptr)
+            {
+                return nullptr;
+            }
+
+            _cursor = texture;
+            _cursorSize = size;
             if (!flag_hasCustomCursor)
             {
                 SDL_HideCursor();
                 flag_hasCustomCursor = true;
             }
+
+            return this;
         }
-        void SetCustomCursor(SDL_Surface *surface)
+        Window *SetCustomCursor(SDL_Surface *surface)
         {
-            cursor = SDL_CreateTextureFromSurface(renderer, surface);
-            if (cursor == NULL)
+            if (this == nullptr)
             {
-                return;
+                return nullptr;
             }
-            cursorSize = {surface->w, surface->h};
+
+            _cursor = SDL_CreateTextureFromSurface(_renderer, surface);
+            if (_cursor == NULL)
+            {
+                return nullptr;
+            }
+            _cursorSize = {surface->w, surface->h};
             if (!flag_hasCustomCursor)
             {
                 SDL_HideCursor();
                 flag_hasCustomCursor = true;
             }
+
+            return this;
         }
-        void SetCustomCursor()
+        Window *SetCustomCursor()
         {
+            if (this == nullptr)
+            {
+                return nullptr;
+            }
+
             SDL_HideCursor();
+
+            return this;
         }
-        void SetScale(int scale = 1.0f)
+        Window *SetCursorScale(Vector2<float> scale)
         {
-            renderer.scale = Vector2<int>(scale, scale);
-            SDL_SetRenderScale(renderer, scale, scale);
+            if (this == nullptr)
+            {
+                return nullptr;
+            }
+
+            _cursorScale = scale;
+
+            return this;
         }
-        void SetScale(Vector2<int> scale)
+        Window *SetCursorScale(float scale = 1.0f)
         {
-            renderer.scale = scale;
-            SDL_SetRenderScale(renderer, scale.x, scale.y);
+            if (this == nullptr)
+            {
+                return nullptr;
+            }
+
+            _cursorScale = Vector2(scale, scale);
+
+            return this;
         }
+        Window *SetWindowScale(int scale = 1.0f)
+        {
+            if (this == nullptr)
+            {
+                return nullptr;
+            }
+
+            _renderer.scale = Vector2<int>(scale, scale);
+            SDL_SetRenderScale(_renderer, scale, scale);
+
+            return this;
+        }
+        Window *SetWindowScale(Vector2<int> scale)
+        {
+            if (this == nullptr)
+            {
+                return nullptr;
+            }
+
+            _renderer.scale = scale;
+            SDL_SetRenderScale(_renderer, scale.x, scale.y);
+
+            return this;
+        }
+
         void Update()
         {
             if (flag_hasCustomCursor)
@@ -153,19 +250,19 @@ namespace ENG
                 float x, y;
                 SDL_GetMouseState(&x, &y);
                 SDL_FRect r;
-                r.w = cursorSize.x * cursorScale.x;
-                r.h = cursorSize.y * cursorScale.y;
-                r.x = (x - ((r.w / 2) * renderer.scale.x)) / renderer.scale.x;
-                r.y = (y - ((r.h / 2) * renderer.scale.x)) / renderer.scale.y;
-                SDL_RenderTexture(renderer, cursor, NULL, &r);
+                r.w = _cursorSize.x * _cursorScale.x;
+                r.h = _cursorSize.y * _cursorScale.y;
+                r.x = (x - ((r.w / 2) * _renderer.scale.x)) / _renderer.scale.x;
+                r.y = (y - ((r.h / 2) * _renderer.scale.x)) / _renderer.scale.y;
+                SDL_RenderTexture(_renderer, _cursor, NULL, &r);
             }
-            SDL_SetRenderTarget(renderer, NULL);
-            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+            SDL_SetRenderTarget(_renderer, NULL);
+            SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
             // SDL_SetRenderScale(renderer, 1, 1);
-            SDL_GetWindowSizeInPixels(pointer, &size.x, &size.y);
-            center = Vector2<int>(size.x / 2, size.y / 2);
-            SDL_RenderPresent(renderer);
-            SDL_RenderClear(renderer);
+            SDL_GetWindowSizeInPixels(_pointer, &_size.x, &_size.y);
+            _center = Vector2<int>(_size.x / 2, _size.y / 2);
+            SDL_RenderPresent(_renderer);
+            SDL_RenderClear(_renderer);
         }
         static void UpdateAll()
         {

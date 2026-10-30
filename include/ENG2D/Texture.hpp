@@ -14,57 +14,73 @@ namespace ENG
     class Texture
     {
     private:
-        struct texture
-        {
-            /* data */
-        };
+        Window *_window;
+        const char *_path;
+        SDL_Texture *_pointer;
+        SDL_Surface *_surface;
+        bool _state = false;
+        Vector2<int> _size;
 
     public:
-        Texture()
-        {
-        }
-        Texture(Window *window, const char *path) : path{path},
-                                                    window{window}
+        Texture(Window *window, const char *path) : _path{path},
+                                                    _window{window}
         {
             Console::LogLoadStart((std::string) "Loading texture [" + path + "]");
 
-            surface = IMG_Load(path);
-            if (surface == NULL)
+            _surface = IMG_Load(path);
+            if (_surface == NULL)
             {
                 Console::LogLoadEnd(false);
                 return;
             }
-            size = Vector2<int>(surface->w, surface->h);
-            pointer = SDL_CreateTextureFromSurface(window->renderer, surface);
-            if (pointer == NULL)
+            _size = Vector2<int>(_surface->w, _surface->h);
+            _pointer = SDL_CreateTextureFromSurface(window->GetRenderer(), _surface);
+            if (_pointer == NULL)
             {
                 Console::LogLoadEnd(false);
                 return;
             }
             Console::LogLoadEnd(true);
-            state = true;
+            _state = true;
         }
-
-        // SDL_Renderer *renderer;
-        Window *window;
-        const char *path;
-        SDL_Texture *pointer;
-        SDL_Surface *surface;
-        bool state = false;
-        Vector2<int> size;
+        
+        Window *GetWindow()
+        {
+            return _window;
+        }
+        const char *GetFilePath()
+        {
+            return _path;
+        }
+        SDL_Texture *GetPointer()
+        {
+            return _pointer;
+        }
+        SDL_Surface *GetSurface()
+        {
+            return _surface;
+        }
+        bool GetState()
+        {
+            return _state;
+        }
+        Vector2<int> GetSize()
+        {
+            return _size;
+        }
 
         operator SDL_Texture *()
         {
-            return pointer;
+            return _pointer;
         }
         operator SDL_Surface *()
         {
-            return surface;
+            return _surface;
         }
         template <typename T>
         operator Vector2<T>()
         {
-            return Vector2<T>((T)size.x, (T)size.y);
+            return Vector2<T>((T)_size.x, (T)_size.y);
         }
     };
 
