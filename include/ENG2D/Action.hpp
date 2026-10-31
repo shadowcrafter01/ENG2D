@@ -4,7 +4,9 @@
 #include <SDL3/SDL.h>
 #include <vector>
 #include <functional>
+#include <optional>
 #include "Input.hpp"
+#include "Dingus.hpp"
 
 namespace ENG
 {
@@ -63,6 +65,7 @@ namespace ENG
         std::vector<InputType> _inputs;
 
         bool _state = false;
+        bool _active = true;
 
     public:
         Action()
@@ -103,6 +106,12 @@ namespace ENG
             return _state;
         }
 
+        Action *SetActive(bool state)
+        {
+            _active = state;
+            return this;
+        }
+
         static void UpdateAll()
         {
             std::unordered_set<SDL_Scancode> keys = Input::Keyboard::GetKeySet();
@@ -110,7 +119,10 @@ namespace ENG
 
             for (auto a : _instances)
             {
-                a->_Update(keys, buttons);
+                if (a->_active)
+                {
+                    a->_Update(keys, buttons);
+                }
             }
         }
     };

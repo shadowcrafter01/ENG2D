@@ -75,7 +75,6 @@ namespace ENG
                 SDL_SetTextureColorMod(texture->GetPointer(), color.red, color.green, color.blue);
                 SDL_SetTextureAlphaMod(texture->GetPointer(), color.alpha);
                 SDL_RenderTextureRotated(texture->GetWindow()->GetRenderer(), texture->GetPointer(), NULL, &r, angle + camera->angle, NULL, SDL_FLIP_NONE);
-                textureDrawCount++;
                 // SDL_DestroyTexture(texture->pointer);
             }
         }
@@ -96,7 +95,6 @@ namespace ENG
                 SDL_SetTextureColorMod(texture->GetPointer(), color.red, color.green, color.blue);
                 SDL_SetTextureAlphaMod(texture->GetPointer(), color.alpha);
                 SDL_RenderTextureRotated(texture->GetWindow()->GetRenderer(), texture->GetPointer(), NULL, &r, angle + camera->angle, NULL, SDL_FLIP_NONE);
-                textureDrawCount++;
                 // SDL_DestroyTexture(texture->pointer);
             }
         }
@@ -114,7 +112,6 @@ namespace ENG
             SDL_SetTextureColorMod(texture->GetPointer(), color.red, color.green, color.blue);
             SDL_SetTextureAlphaMod(texture->GetPointer(), color.alpha);
             SDL_RenderTextureRotated(texture->GetWindow()->GetRenderer(), texture->GetPointer(), NULL, &r, angle, NULL, SDL_FLIP_NONE);
-            textureDrawCount++;
         }
         static void DrawTexture(Texture *texture, Vector2<float> position, float size = 1.0f, Vector2<float> scale = Vector2<float>(1.0f, 1.0f), float angle = 0.0f, ColorRGBA color = ColorRGBA(255, 255, 255, 255))
         {
@@ -129,7 +126,6 @@ namespace ENG
             SDL_SetTextureColorMod(texture->GetPointer(), color.red, color.green, color.blue);
             SDL_SetTextureAlphaMod(texture->GetPointer(), color.alpha);
             SDL_RenderTextureRotated(texture->GetWindow()->GetRenderer(), texture->GetPointer(), NULL, &r, angle, NULL, SDL_FLIP_NONE);
-            textureDrawCount++;
         }
 
         static void DrawAtlas(Camera *camera, Atlas *atlas, Vector2<float> position, float size = 1, float angle = 0, ColorRGBA color = ColorRGBA(255, 255, 255, 255))
@@ -155,7 +151,7 @@ namespace ENG
                 SDL_SetTextureColorMod(atlas->GetTexture()->GetPointer(), color.red, color.green, color.blue);
                 SDL_SetTextureAlphaMod(atlas->GetTexture()->GetPointer(), color.alpha);
                 SDL_RenderTextureRotated(atlas->GetTexture()->GetWindow()->GetRenderer(), atlas->GetTexture()->GetPointer(), &s, &r, angle + camera->angle, NULL, SDL_FLIP_NONE);
-                textureDrawCount++;
+                
             }
         }
         static void DrawAnimatedTexture(Camera *camera, AnimatedTexture *animatedTexture, Vector2<float> position, int frame = -1, float size = 1, float angle = 0, ColorRGBA color = ColorRGBA(255, 255, 255, 255))
@@ -188,7 +184,7 @@ namespace ENG
                 SDL_SetTextureColorMod(animatedTexture->GetAtlas()->GetTexture()->GetPointer(), color.red, color.green, color.blue);
                 SDL_SetTextureAlphaMod(animatedTexture->GetAtlas()->GetTexture()->GetPointer(), color.alpha);
                 SDL_RenderTextureRotated(animatedTexture->GetAtlas()->GetTexture()->GetWindow()->GetRenderer(), animatedTexture->GetAtlas()->GetTexture()->GetPointer(), &s, &r, angle + camera->angle, NULL, SDL_FLIP_NONE);
-                textureDrawCount++;
+                
             }
         }
 
@@ -218,7 +214,6 @@ namespace ENG
             SDL_DestroySurface(textSurface);
             SDL_DestroyTexture(texture);
         }
-        inline static int textureDrawCount = 0;
 
         static void DrawLine(Camera *camera, Vector2<float> from, Vector2<float> to, ColorRGBA color = ColorRGBA(255, 255, 255, 255))
         {
