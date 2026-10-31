@@ -28,10 +28,7 @@ set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 set(SDL_SHARED OFF CACHE BOOL "" FORCE)
 set(SDL_STATIC ON CACHE BOOL "" FORCE)
 
-# ------------------------------------------------------------
 # SDL3
-# ------------------------------------------------------------
-
 set(SDL_TESTS OFF CACHE BOOL "" FORCE)
 set(SDL_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(SDL_TEST_LIBRARY OFF CACHE BOOL "" FORCE)
@@ -42,10 +39,7 @@ FetchContent_Declare(
     GIT_SHALLOW TRUE
 )
 
-# ------------------------------------------------------------
 # SDL_image
-# ------------------------------------------------------------
-
 set(SDLIMAGE_TESTS OFF CACHE BOOL "" FORCE)
 set(SDLIMAGE_SAMPLES OFF CACHE BOOL "" FORCE)
 FetchContent_Declare(
@@ -55,10 +49,7 @@ FetchContent_Declare(
     GIT_SHALLOW TRUE
 )
 
-# ------------------------------------------------------------
 # SDL_ttf
-# ------------------------------------------------------------
-
 set(SDLTTF_VENDORED ON CACHE BOOL "" FORCE)
 set(SDLTTF_TESTS OFF CACHE BOOL "" FORCE)
 set(SDLTTF_SAMPLES OFF CACHE BOOL "" FORCE)
@@ -69,10 +60,7 @@ FetchContent_Declare(
     GIT_SHALLOW TRUE
 )
 
-# ------------------------------------------------------------
 # SDL_mixer
-# ------------------------------------------------------------
-
 set(SDLMIXER_VENDORED ON CACHE BOOL "" FORCE)
 set(SDLMIXER_TESTS OFF CACHE BOOL "" FORCE)
 set(SDLMIXER_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -83,9 +71,15 @@ FetchContent_Declare(
     GIT_SHALLOW TRUE
 )
 
-# ------------------------------------------------------------
+# SDL_net
+FetchContent_Declare(
+    SDL3_net
+    GIT_REPOSITORY https://github.com/libsdl-org/SDL_net.git
+    GIT_TAG "release-3.2.0"
+    GIT_SHALLOW TRUE
+)
+
 # Box2D
-# ------------------------------------------------------------
 set(BOX2D_SAMPLES OFF CACHE BOOL "" FORCE)
 set(BOX2D_UNIT_TESTS OFF CACHE BOOL "" FORCE)
 set(BOX2D_DOCS OFF CACHE BOOL "" FORCE)
@@ -98,9 +92,7 @@ FetchContent_Declare(
     GIT_SHALLOW TRUE
 )
 
-# ------------------------------------------------------------
 # nlohmann json
-# ------------------------------------------------------------
 
 FetchContent_Declare(
     json
@@ -115,6 +107,7 @@ FetchContent_MakeAvailable(
     SDL3_image
     SDL3_ttf
     SDL3_mixer
+    SDL3_net
     box2d
     json
 )
