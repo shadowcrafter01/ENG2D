@@ -16,6 +16,7 @@
 #include <box2d/base.h>
 #include <box2d/box2d.h>
 #include "ENG2D/Math.hpp"
+#include "ENG2D/Action.hpp"
 
 #include <memory>
 #include <utility>
@@ -27,7 +28,7 @@ namespace ENG
     class Dingus
     {
     private:
-        inline static std::vector<std::unique_ptr<Dingus>> _instances;        
+        inline static std::vector<std::unique_ptr<Dingus>> _instances;
 
         void _Update()
         {
@@ -38,36 +39,15 @@ namespace ENG
                 _transform.position.y = t.p.y;
                 _transform.angle = b2Rot_GetAngle(t.q) * -180.0 / M_PI;
             }
-            if (_texture != NULL && _camera != nullptr)
+            if (_texture != nullptr && _camera != nullptr)
             {
                 DrawTools::DrawTexture(_camera, _texture, _transform.position, _transform.size, _transform.angle, _color);
             }
-            if (_transform.ContainsPoint(Input::Mouse::GetMouseWorldPos(_camera)))
-            {
-                MouseHover();
-                for (auto f : _hoverFunctions)
-                {
-                    f(this);
-                }
+            bool hover = _transform.ContainsPoint(Input::Mouse::GetMouseWorldPos(_camera));
 
-                if (Input::Mouse::Left)
-                {
-                    MouseDown();
-                    MouseDown(SDL_BUTTON_LEFT);
-                    for (auto f : _onClickFunctions_L)
-                    {
-                        f(this);
-                    }
-                }
-                if (Input::Mouse::Right)
-                {
-                    MouseDown();
-                    MouseDown(SDL_BUTTON_RIGHT);
-                    for (auto f : _onClickFunctions_R)
-                    {
-                        f(this);
-                    }
-                }
+            if (_action != nullptr)
+            {
+                _action->SetActive(hover);
             }
             Update();
         }
@@ -110,9 +90,7 @@ namespace ENG
         float _renderLayer = 0;
         const char *_name = "dingus";
 
-        std::vector<std::function<void(Dingus *)>> _onClickFunctions_R = {};
-        std::vector<std::function<void(Dingus *)>> _onClickFunctions_L = {};
-        std::vector<std::function<void(Dingus *)>> _hoverFunctions = {};
+        Action *_action = nullptr;
 
         bool _active = true;
         bool _physicsActive = false;
@@ -138,7 +116,7 @@ namespace ENG
         {
             if (size = Vector2<float>(0, 0))
             {
-                _transform.size = texture->size;
+                _transform.size = texture->GetSize();
             }
             else
             {
@@ -325,33 +303,7 @@ namespace ENG
             _camera = cam;
             return this;
         }
-        Dingus *AssignFunction_MouseClickR(std::function<void(Dingus *)> func)
-        {
-            if (this == nullptr)
-            {
-                return nullptr;
-            }
-            _onClickFunctions_R.push_back(func);
-            return this;
-        }
-        Dingus *AssignFunction_MouseClickL(std::function<void(Dingus *)> func)
-        {
-            if (this == nullptr)
-            {
-                return nullptr;
-            }
-            _onClickFunctions_L.push_back(func);
-            return this;
-        }
-        Dingus *AssignFunction_MouseHover(std::function<void(Dingus *)> func)
-        {
-            if (this == nullptr)
-            {
-                return nullptr;
-            }
-            _hoverFunctions.push_back(func);
-            return this;
-        }
+
 
         // get functions
         Transform2<float> GetTransform()

@@ -10,6 +10,7 @@ namespace ENG
     class CollisionShape
     {
     private:
+    
     public:
         CollisionShape()
         {

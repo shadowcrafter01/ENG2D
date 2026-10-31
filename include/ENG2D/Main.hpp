@@ -88,10 +88,9 @@ namespace ENG
     bool Update()
     {
         Event();
+        Dingus::UpdateAll();
         Action::UpdateAll();
         Window::UpdateAll();
-        DrawTools::textureDrawCount = 0;
-        Dingus::UpdateAll();
         return GAMESTATE;
     }
 
